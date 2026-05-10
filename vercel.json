@@ -11,6 +11,7 @@
       "config": { "distDir": "dist" }
     }
   ],
+ "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200,
   "rewrites": [
     {
       "source": "/api/(.*)",
