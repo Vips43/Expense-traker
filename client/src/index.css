@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "flowbite-react/plugin/tailwindcss";
+@source "../.flowbite-react/class-list.json";
+
+/* After your imports/base styles */
+@layer components {
+  .form-label {
+    @apply block mb-2 text-sm font-medium text-slate-300;
+  }
+
+  .form-input {
+    @apply w-full p-2.5 bg-slate-800 border border-slate-600 rounded-lg text-white outline-none transition-all;
+    @apply focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+}
