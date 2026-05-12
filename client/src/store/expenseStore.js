@@ -49,5 +49,45 @@ export const useExpStore = create((set, get) => ({
       set({ loading: false, err: error });
     }
   },
-  removeExpense: async () => {},
+  addEarning: async (earning) => {
+    const token = useAuthStore.getState().user?.token;
+    if (!token) return console.error("No token found");
+    try {
+      const res = await fetch(`/api/earning`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(earning),
+      });
+      const data = await res.json();
+
+      set({ expense: data, loading: false, err: null });
+    } catch (error) {
+      console.error(error);
+      set({ loading: false, err: error });
+    }
+  },
+  removeExpense: async (id, type) => {
+    const token = useAuthStore.getState().user?.token;
+    if (!token) return console.error("No token found");
+    try {
+      set({ loading: true, err: null });
+      const res = await fetch(`/api/txn/${id}?type=${type}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      console.log("deleted ", data);
+      const updatedExpenses = expense.filter((item) => item._id !== id);
+
+      set({ expense: updatedExpenses, loading: false, err: null });
+    } catch (error) {
+      set({ loading: false, err: error });
+    }
+  },
 }));

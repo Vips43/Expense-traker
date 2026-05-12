@@ -1,0 +1,22 @@
+import Earning from "../model/earningModel.js";
+
+export const addEarning = async (req, res) => {
+  const { amount, name, category, mode } = req.body;
+  if (!amount || !name)
+    return res.status(400).json({ msg: "no info provided!" });
+
+  try {
+    await Earning.create({
+      name,
+      category,
+      amount,
+      mode,
+      type: "earning",
+      user: req.user._id,
+    });
+    res.status(200).json({ msg: "earning added!" });
+  } catch (error) {
+    console.error("server error", error.message);
+    return res.status(500).json({ msg: "server error!" });
+  }
+};

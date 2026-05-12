@@ -7,8 +7,8 @@ function Layout() {
   const { logout } = useAuthStore();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <nav className="p-4 border-b border-slate-800 bg-slate-900 flex items-center justify-between px-5 sticky top-0 z-999">
+    <div className="bg-slate-950 text-white min-h-full">
+      <nav className="p-4 bg-slate-900 flex items-center justify-between px-5">
         <h1 className="font-bold">Expense Tracker</h1>
         <Button
           onClick={() => {
@@ -20,7 +20,7 @@ function Layout() {
         </Button>
       </nav>
 
-      <main className="p-4">
+      <main className="p-4 overflow-y-auto">
         <Outlet />
       </main>
     </div>

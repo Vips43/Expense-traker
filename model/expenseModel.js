@@ -9,11 +9,18 @@ const expenseSchema = new mongoose.Schema(
     },
     type: {
       type: String,
+      enum: ["expense"],
+      default: "expense",
+      required: true,
+    },
+    category: {
+      type: String,
       required: true,
       trim: true,
       enum: ["Food", "Bills", "Entertainment", "Transport", "Other"],
       default: "Other",
     },
+    mode: { type: String, enum: ["online", "offline"], required: true },
     amount: {
       type: Number,
       required: true,
