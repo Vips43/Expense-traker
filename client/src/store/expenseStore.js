@@ -3,6 +3,7 @@ import { useAuthStore } from "./authStore";
 
 export const useExpStore = create((set, get) => ({
   expense: [],
+  totals: [],
   loading: false,
   err: null,
 
@@ -20,6 +21,10 @@ export const useExpStore = create((set, get) => ({
         },
         body: JSON.stringify(exp),
       });
+      if (res.ok) {
+        get().totalExp();
+        get().getExpense();
+      }
       const data = await res.json();
       console.log(data);
       set({ loading: false, err: null });
@@ -61,9 +66,36 @@ export const useExpStore = create((set, get) => ({
         },
         body: JSON.stringify(earning),
       });
+      if (res.ok) {
+        get().totalExp();
+        get().getExpense();
+      }
       const data = await res.json();
 
       set({ expense: data, loading: false, err: null });
+    } catch (error) {
+      console.error(error);
+      set({ loading: false, err: error });
+    }
+  },
+  totalExp: async () => {
+    const token = useAuthStore.getState().user?.token;
+    if (!token) return console.error("No token found");
+    try {
+      set({ loading: true, err: null });
+      const res = await fetch(`/api/totalExp`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
+      const data = await res.json();
+
+      set({ totals: data, loading: false, err: null });
     } catch (error) {
       console.error(error);
       set({ loading: false, err: error });
@@ -81,6 +113,10 @@ export const useExpStore = create((set, get) => ({
           Authorization: `Bearer ${token}`,
         },
       });
+      if (res.ok) {
+        get().totalExp();
+        get().getExpense();
+      }
       const data = await res.json();
       console.log("deleted ", data);
       const updatedExpenses = expense.filter((item) => item._id !== id);

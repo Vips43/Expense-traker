@@ -1,5 +1,6 @@
 import Earning from "../model/earningModel.js";
 import Expense from "../model/expenseModel.js";
+import User from "../model/userModel.js";
 
 export const addExpense = async (req, res) => {
   const { amount, name, mode, category } = req.body;
@@ -12,6 +13,10 @@ export const addExpense = async (req, res) => {
       type: "expense",
       user: req.user._id,
     });
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: { expense: expense._id },
+    });
+
     res.status(201).json(expense);
   } catch (error) {
     console.log(error);
@@ -32,6 +37,20 @@ export const getExpense = async (req, res) => {
     res.status(200).json(allTransactions);
   } catch (error) {
     res.status(500).json({ msg: "server error" });
+  }
+};
+export const getTotalExp = async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const user = await User.findById(_id).populate("expense earning");
+    if (!user) return res.status(400).json({ msg: "no user found" });
+
+    const totalSpent = user.expense.reduce((acc, curr) => acc + curr.amount, 0);
+    const totalEarn = user.earning.reduce((acc, curr) => acc + curr.amount, 0);
+    res.status(200).json({ totalSpent, totalEarn });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "server error", error });
   }
 };
 

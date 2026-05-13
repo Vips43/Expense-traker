@@ -1,73 +1,65 @@
-import { Button } from "flowbite-react";
 import { useAuthStore } from "../store/authStore";
-import Expenses from "../component/Expenses";
-import { HiPlus } from "react-icons/hi";
 import { useExpStore } from "../store/expenseStore";
 import { useEffect } from "react";
 import { useMyStore } from "../store/store";
 import AddExp from "./AddExp";
+import { ToggleButtons } from "../component/ToggleButtons";
 
 function Home() {
   const user = useAuthStore((state) => state.user);
+  const { toggle, setToggle } = useMyStore();
   const {
     expense = [],
     getExpense,
     removeExpense,
     loading,
+    totalExp,
+    totals,
     err,
   } = useExpStore();
-  const { toggle, setToggle } = useMyStore();
   const exp = user?.expenseReport;
 
+  useEffect(() => {
+    const data = async () => await totalExp();
+    data();
+  }, [totalExp]);
   useEffect(() => {
     const data = async () => await getExpense();
     data();
   }, []);
 
-  const totalSpent = exp?.items?.reduce((acc, curr) => {
-    return acc + (curr.amount || 0);
-  }, 0);
-  const currentBalance = (exp?.totalPocket || 0) - totalSpent;
-  console.log(expense);
   return (
     <div className="h-full">
-      <div className="w-full flex items-center justify-between">
-        <Button type="button" onClick={() => setToggle(`expense`)}>
-          Add Expenses
-        </Button>
-        <Button type="button" onClick={() => setToggle("earning")}>
-          Add Earning
-        </Button>
-      </div>
+      <ToggleButtons setToggle={setToggle} />
       {toggle.expense && <AddExp label={`expense`} />}
       {toggle.earning && <AddExp label={`earning`} />}
       <section>
         <div className="">
-          <h3 className="text-center text-2xl font-bold capitalize">
+          <h3 className="text-center text-mist-400 text-2xl font-bold capitalize">
             Hello, {user?.name}
           </h3>
-          <div className="bg-gray-900 text-white p-8 rounded-3xl shadow-xl flex flex-col items-center justify-center my-6 border border-gray-800">
-            <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
-              Current Balance
-            </span>
-            <h3 className="text-6xl font-bold mt-2 tracking-tighter">
-              ₹{currentBalance || 0}
-            </h3>
-            {exp && (
-              <div className="mt-6 px-4 py-2 bg-gray-800 rounded-full flex items-center gap-2 border border-gray-700">
-                <span className="text-xs text-gray-400">Total: </span>
-                <span className="text-xs font-bold text-green-400 capitalize">
-                  {exp?.totalPocket}
-                </span>
-                |<span className="text-xs text-gray-400">Source: </span>
-                <span className="text-xs font-bold text-green-400 capitalize">
-                  {exp?.mainSource}
-                </span>
-              </div>
-            )}
+          <div className="bg-gray-900 text-white p-8 rounded-3xl shadow-xl grid grid-cols-2 my-6 border border-gray-800">
+            <div className="ml-auto order-2">
+              <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
+                Toal Earning
+              </span>
+              <h3 className="text-green-400 text-6xl font-bold mt-2 tracking-tighter">
+                ₹{totals?.totalEarn}
+              </h3>
+            </div>
+            <div className="mr-auto order-1">
+              <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
+                Toal Expense
+              </span>
+              <h3 className="text-6xl text-red-400 font-bold mt-2 tracking-tighter">
+                ₹{totals?.totalSpent}
+              </h3>
+            </div>
           </div>
           <div className="mt-8">
-            <h4 className="text-xl font-semibold mb-4">Transaction History</h4>
+            <h4 className="text-xl text-mist-300 font-semibold mb-4">
+              Transaction History
+            </h4>
 
             {/* Header for the list (Optional but recommended for clarity) */}
             {expense.length > 0 && (
@@ -80,9 +72,9 @@ function Home() {
               </div>
             )}
 
-            <div className="overflow-y-auto max-h-[400px] scrollbar-hide">
+            <div className="overflow-y-auto max-h-100 scrollbar-hide">
               {loading ? (
-                "loading..."
+                <p className="text-center mt-20">Loading...</p>
               ) : expense.length > 0 ? (
                 expense.map((ex, i) => (
                   <div
@@ -95,7 +87,7 @@ function Home() {
                     </span>
 
                     {/* Name */}
-                    <span className="col-span-4 capitalize font-medium truncate">
+                    <span className="text-mist-400 col-span-4 capitalize font-medium truncate">
                       {ex.name}
                     </span>
 

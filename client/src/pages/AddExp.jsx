@@ -100,7 +100,6 @@ function AddExp({ label }) {
                 name="mode"
                 id={id + "-online"}
                 value="online"
-                defaultChecked
               />
               <label htmlFor={id + "-online"} className="cursor-pointer">
                 Online
@@ -112,6 +111,7 @@ function AddExp({ label }) {
                 name="mode"
                 id={id + "-offline"}
                 value="offline"
+                defaultChecked
               />
               <label htmlFor={id + "-offline"} className="cursor-pointer">
                 Offline

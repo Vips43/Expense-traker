@@ -3,6 +3,7 @@ import { protect } from "../middleware/authMiddleware.js";
 import {
   addExpense,
   getExpense,
+  getTotalExp,
   removeTxn,
 } from "../controller/expenseController.js";
 import { addEarning } from "../controller/earningController.js";
@@ -12,6 +13,8 @@ const router = e.Router();
 router.post("/expense", protect, addExpense);
 router.post("/earning", protect, addEarning);
 router.get("/expense", protect, getExpense);
+router.get("/totalExp", protect, getTotalExp);
+
 router.delete("/txn/:id", protect, removeTxn);
 
 export default router;
