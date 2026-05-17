@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-});
+},{timestamps:true});
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
@@ -31,8 +31,20 @@ userSchema.virtual("earning", {
   localField: "_id",
   foreignField: "user",
 });
+userSchema.virtual("rights").get(function () {
+  return {
+    admin: false,
+    add: false,
+    remove: false,
+  };
+});
 userSchema.set("toJSON", { virtuals: true });
 userSchema.set("toObject", { virtuals: true });
 
+
+
 const User = mongoose.model("User", userSchema);
 export default User;
+
+
+

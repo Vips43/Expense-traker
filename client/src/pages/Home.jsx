@@ -7,6 +7,7 @@ import { ToggleButtons } from "../component/ToggleButtons";
 
 function Home() {
   const user = useAuthStore((state) => state.user);
+  const token = user?.token;
   const { toggle, setToggle } = useMyStore();
   const {
     expense = [],
@@ -15,18 +16,15 @@ function Home() {
     loading,
     totalExp,
     totals,
-    err,
+    success,
   } = useExpStore();
-  const exp = user?.expenseReport;
 
   useEffect(() => {
-    const data = async () => await totalExp();
-    data();
-  }, [totalExp]);
+    if (token) totalExp();
+  }, [token, user, totalExp]);
   useEffect(() => {
-    const data = async () => await getExpense();
-    data();
-  }, []);
+    if (token) getExpense();
+  }, [token]);
 
   return (
     <div className="h-full">
@@ -43,16 +41,16 @@ function Home() {
               <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
                 Toal Earning
               </span>
-              <h3 className="text-green-400 text-6xl font-bold mt-2 tracking-tighter">
-                ₹{totals?.totalEarn}
+              <h3 className="text-green-400 text-4xl font-bold mt-2 tracking-tighter">
+                ₹{totals?.totalEarn || 0}
               </h3>
             </div>
             <div className="mr-auto order-1">
               <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
                 Toal Expense
               </span>
-              <h3 className="text-6xl text-red-400 font-bold mt-2 tracking-tighter">
-                ₹{totals?.totalSpent}
+              <h3 className="text-4xl text-red-400 font-bold mt-2 tracking-tighter">
+                ₹{totals?.totalSpent || 0}
               </h3>
             </div>
           </div>
@@ -72,7 +70,7 @@ function Home() {
               </div>
             )}
 
-            <div className="overflow-y-auto max-h-100 scrollbar-hide">
+            <div className="overflow-y-auto max-h-100 scrollbar-hide scrollbar">
               {loading ? (
                 <p className="text-center mt-20">Loading...</p>
               ) : expense.length > 0 ? (

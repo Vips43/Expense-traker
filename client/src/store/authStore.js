@@ -1,17 +1,18 @@
 import { create } from "zustand";
+import { useMyStore } from "./store";
+import { toast } from "react-toastify";
 
 const BASE_URL = `/api`;
 const loggedUser = JSON.parse(localStorage.getItem("user"));
 
 export const useAuthStore = create((set, get) => ({
-  // 1. State
-  user: loggedUser || null, // Start as null to easily check if logged in
+  user: loggedUser || null, 
   err: null,
   loading: false,
+  msg: null,
   isAuthenticated: !!loggedUser,
 
   register: async (creds) => {
-    console.log(creds);
     set({ loading: true });
     try {
       const res = await fetch(BASE_URL + "/auth/register", {
@@ -20,11 +21,12 @@ export const useAuthStore = create((set, get) => ({
         body: JSON.stringify(creds),
       });
       const data = await res.json();
-      // console.log(data);
-      set({ user: data, loading: false });
+      set({ user: data, loading: false, msg: "Register successful" });
+      toast.success("Register successful");
     } catch (error) {
       console.error("registration failed", error);
-      set({ loading: false, err: error });
+      set({ loading: false, err: "internal server error" });
+      toast.error("internal server error");
     }
   },
 
@@ -37,22 +39,25 @@ export const useAuthStore = create((set, get) => ({
         body: JSON.stringify(creds),
       });
       const data = await res.json();
-
       const user = {
         name: data.user.name,
         email: data.user.email,
         token: data.token,
+        date: data.user.date,
+        msg: data.msg,
       };
-      // console.log(data);
       localStorage.setItem("user", JSON.stringify(user));
       set({ user: user, loading: false, isAuthenticated: true, err: null });
+      toast.success("Login successful");
     } catch (error) {
       console.error("login failed", error.message);
       set({ loading: false, err: "Server error" });
+      toast.error("Server error");
     }
   },
   logout: () => {
     localStorage.removeItem("user");
     set({ user: null, isAuthenticated: false });
+    toast.success("logged out");
   },
 }));

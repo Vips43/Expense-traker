@@ -5,6 +5,7 @@ import connectDB from "./config/conn.js";
 import dotenv from "dotenv";
 import expenseRoutes from "./routes/expenseRoutes.js";
 import cors from "cors";
+import User from "./model/userModel.js";
 
 dotenv.config();
 const PORT = 3000;
@@ -19,10 +20,40 @@ app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api", expenseRoutes);
 
-// At the bottom of your server.js, replace your app.listen with this:
+
+const backfillTimestamps = async () => {
+  try {
+
+    const usersToUpdate = await User.find({ createdAt: { $exists: false } });
+    console.log(`Found ${usersToUpdate.length} users needing updates.`);
+
+    for (const user of usersToUpdate) {
+      const creationDate = user._id.getTimestamp(); 
+
+      await User.updateOne(
+        { _id: user._id },
+        { 
+          $set: { 
+            createdAt: creationDate, 
+            updatedAt: creationDate 
+          } 
+        },
+        { timestamps: false } 
+      );
+    }
+
+    console.log("All existing users backfilled successfully!");
+    process.exit(0);
+  } catch (error) {
+    console.error("Backfill failed:", error);
+    process.exit(1);
+  }
+};
+
+// backfillTimestamps();
+
 export default app;
 
-// Keep this for local development
 if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => {
     console.log("Server started on: ", PORT);

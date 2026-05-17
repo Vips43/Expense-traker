@@ -6,7 +6,7 @@ import { useMyStore } from "../store/store";
 function AddExp({ label }) {
   const id = useId();
 
-  const { setExpense, addEarning, loading, err } = useExpStore();
+  const { setExpense, addEarning, loading, err, success } = useExpStore();
   const { setToggle } = useMyStore();
   const typeArr = ["Food", "Bills", "Entertainment", "Transport", "Other"];
 
@@ -124,7 +124,11 @@ function AddExp({ label }) {
           type="submit"
           className="mt-2 flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-900/20"
         >
-          {loading ? `Adding ${label}...` : `Add ${label}`}
+          {loading
+            ? `Adding ${label}...`
+            : success
+              ? "Expense Added"
+              : `Add ${label}`}
         </button>
       </form>
     </section>

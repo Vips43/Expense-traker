@@ -1,6 +1,10 @@
 import User from "../model/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime.js";
+
+dayjs.extend(relativeTime);
 
 export const registerUser = async (req, res) => {
   const { email, name, password } = req.body;
@@ -17,7 +21,7 @@ export const registerUser = async (req, res) => {
 
     return res.status(200).json({ msg: `user ${name} created successfully!` });
   } catch (error) {
-    console.log(email,name, "error", error)
+    console.log(email, name, "error", error);
     return res.status(500).json({ msg: `user creation failed`, error });
   }
 };
@@ -32,14 +36,26 @@ export const loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRY,
-    });
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRY,
+      },
+    );
+    const signUpDate = dayjs(user.createdAt || user.updatedAt);
 
     res.status(200).json({
-      msg: "Login succesfull",
+      msg: "Login successfull",
       token,
-      user: { id: user._id, name: user.name, email: user.email },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        date: signUpDate.fromNow(true),
+      },
     });
   } catch (error) {
     res.status(500).json({ msg: "server error" });

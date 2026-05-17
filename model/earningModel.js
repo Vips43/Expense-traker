@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import MongooseDelete from "mongoose-delete";
 
 const earningSchema = new mongoose.Schema(
   {
@@ -17,6 +18,12 @@ const earningSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Earning = mongoose.model("Earning", earningSchema);
 
+earningSchema.plugin(MongooseDelete, {
+  deletedBy: true,
+  deletedByType: String,
+  overrideMethods: "all",
+});
+
+const Earning = mongoose.model("Earning", earningSchema);
 export default Earning;
