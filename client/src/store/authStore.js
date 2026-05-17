@@ -1,6 +1,4 @@
 import { create } from "zustand";
-import { useMyStore } from "./store";
-import { toast } from "react-toastify";
 
 const BASE_URL = `/api`;
 const loggedUser = JSON.parse(localStorage.getItem("user"));
