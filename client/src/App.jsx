@@ -5,7 +5,6 @@ import AddExp from "./pages/AddExp";
 import Home from "./pages/Home";
 import Register from "./component/Register";
 import Login from "./component/Login";
-import "react-toastify/dist/ReactToastify.css";
 
 
 function App() {
