@@ -6,7 +6,7 @@ import {
   getTotalExp,
   removeTxn,
 } from "../controller/expenseController.js";
-import { addEarning } from "../controller/earningController.js";
+import { addEarning, filterTxns } from "../controller/earningController.js";
 
 const router = e.Router();
 
@@ -14,6 +14,7 @@ router.post("/expense", protect, addExpense);
 router.post("/earning", protect, addEarning);
 router.get("/expense", protect, getExpense);
 router.get("/totalExp", protect, getTotalExp);
+router.post("/filter/:query", protect, filterTxns);
 
 router.delete("/txn/:id", protect, removeTxn);
 

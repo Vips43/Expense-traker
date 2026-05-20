@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
 import { useMyStore } from "./store";
+import api from "./api/axiosInstance";
 
 export const useExpStore = create((set, get) => ({
   expense: [],
@@ -150,6 +151,24 @@ export const useExpStore = create((set, get) => ({
       set({ expense: updatedExpenses, loading: false, err: null });
     } catch (error) {
       set({ loading: false, err: "internal server error" });
+    }
+  },
+  filterExpense: async (query) => {
+    const token = useAuthStore.getState().user?.token;
+    if (!token) return console.error("No token found");
+    try {
+      set({ loading: true, err: null });
+      const res = await fetch(`/api/filter/${query}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      set({ expense: data, loading: false, err: null });
+    } catch (error) {
+      set({ loading: false, err: "Failed to filter" });
     }
   },
 }));

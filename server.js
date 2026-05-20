@@ -10,7 +10,7 @@ import User from "./model/userModel.js";
 dotenv.config();
 const PORT = 3000;
 const app = express();
-const mongo_url = process.env.MONGO_URI;
+const mongo_url = process.env.MONGO_LOCAL;
 connectDB(mongo_url);
 
 app.use(express.json());

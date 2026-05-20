@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import MongooseDelete from "mongoose-delete";
+// import MongooseDelete from "mongoose-delete";
 
 const expenseSchema = new mongoose.Schema(
   {
@@ -34,11 +34,11 @@ const expenseSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-expenseSchema.plugin(MongooseDelete, {
-  deletedBy: true,
-  deletedByType: String,
-  overrideMethods: "all",
-});
+// expenseSchema.plugin(MongooseDelete, {
+//   deletedBy: true,
+//   deletedByType: String,
+//   overrideMethods: "all",
+// });
 
 const Expense = mongoose.model("Expense", expenseSchema);
 export default Expense;

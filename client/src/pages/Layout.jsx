@@ -11,8 +11,9 @@ function Layout() {
   const setToggle = useMyStore((state) => state.setToggle);
 
   return (
-    <div className="relative bg-slate-950 text-white min-h-full overflow-x-hidden">
-      <nav className="p-4 bg-slate-900 flex items-center justify-between px-5">
+    // changed h-full to fixed h-screen with absolute overflow block
+    <div className="bg-slate-950 text-white flex flex-col h-dvh w-full overflow-hidden">
+      <nav className="p-4 bg-slate-900 flex items-center justify-between px-5 h-16 shrink-0">
         <div className="flex items-center gap-5">
           <div className="text-2xl cursor-pointer" onClick={() => setToggle("navbar")}>
             <AiOutlineMenuUnfold />
@@ -28,9 +29,11 @@ function Layout() {
           Logout
         </Button>
       </nav>
+      
       <Navbar />
 
-      <main className="p-4 overflow-y-auto">
+      {/* min-h-0 prevents the main container from growing beyond the remaining viewport height */}
+      <main className="flex-1 min-h-0 p-4 overflow-hidden">
         <Outlet />
       </main>
     </div>

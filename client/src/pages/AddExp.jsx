@@ -22,7 +22,7 @@ function AddExp({ label }) {
   };
 
   return (
-    <section className="fixed inset-0 w-full h-dvh grid bg-black/70 place-items-center">
+    <section className="fixed inset-0 w-full h-dvh grid bg-black/70 place-items-center z-50">
       <form
         className="flex flex-col max-w-md w-full gap-3 p-5 rounded-3xl mx-auto bg-slate-900 text-slate-100 shadow-2xl border border-slate-700"
         onSubmit={handleSubmit}

@@ -19,3 +19,7 @@
 .scrollbar::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+.text-box-trim {
+  text-box-trim: trim-both;
+  /* text-box-edge: cap alphabetic; */
+}

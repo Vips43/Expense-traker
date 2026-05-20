@@ -73,14 +73,14 @@ export const removeTxn = async (req, res) => {
     return res.status(400).json({ msg: "select valid trasaction" });
   try {
     let txn;
-    if (type === "expense") txn = await Expense.findById(id);
-    else if (type === "earning") txn = await Earning.findById(id);
+    if (type === "expense") txn = await Expense.findByIdAndDelete(id);
+    else if (type === "earning") txn = await Earning.findByIdAndDelete(id);
     else return res.status(400).json({ msg: "Invalid transaction type" });
 
     if (!txn) return res.status(404).json({ msg: "Transaction not found" });
 
-    console.log("userID: ", req.user?._id.toString());
-    await txn.delete(req.user?._id.toString() || "system");
+    // console.log("userID: ", req.user?._id.toString());
+    // await txn.delete(req.user?._id.toString() || "system");
 
     res.status(200).json({ msg: "Transaction deleted", txn });
   } catch (error) {

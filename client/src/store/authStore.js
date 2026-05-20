@@ -4,7 +4,7 @@ const BASE_URL = `/api`;
 const loggedUser = JSON.parse(localStorage.getItem("user"));
 
 export const useAuthStore = create((set, get) => ({
-  user: loggedUser || null, 
+  user: loggedUser || null,
   err: null,
   loading: false,
   msg: null,
@@ -20,11 +20,9 @@ export const useAuthStore = create((set, get) => ({
       });
       const data = await res.json();
       set({ user: data, loading: false, msg: "Register successful" });
-      toast.success("Register successful");
     } catch (error) {
       console.error("registration failed", error);
       set({ loading: false, err: "internal server error" });
-      toast.error("internal server error");
     }
   },
 
@@ -46,16 +44,13 @@ export const useAuthStore = create((set, get) => ({
       };
       localStorage.setItem("user", JSON.stringify(user));
       set({ user: user, loading: false, isAuthenticated: true, err: null });
-      toast.success("Login successful");
     } catch (error) {
       console.error("login failed", error.message);
       set({ loading: false, err: "Server error" });
-      toast.error("Server error");
     }
   },
   logout: () => {
     localStorage.removeItem("user");
     set({ user: null, isAuthenticated: false });
-    toast.success("logged out");
   },
 }));
