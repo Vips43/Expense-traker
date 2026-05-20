@@ -1,10 +1,9 @@
 import { useAuthStore } from "../store/authStore";
 import { useExpStore } from "../store/expenseStore";
+import { useEffect } from "react";
 import { useMyStore } from "../store/store";
 import AddExp from "./AddExp";
 import { ToggleButtons } from "../component/ToggleButtons";
-import Filter from "../component/Filter";
-import { useEffect } from "react";
 
 function Home() {
   const user = useAuthStore((state) => state.user);
@@ -17,6 +16,7 @@ function Home() {
     loading,
     totalExp,
     totals,
+    success,
   } = useExpStore();
 
   useEffect(() => {
@@ -27,115 +27,112 @@ function Home() {
   }, [token]);
 
   return (
-    // 1. Give the outer container a full viewport configuration
-    <div className="flex flex-col h-full max-h-full p-4 overflow-hidden">
+    <div className="h-full">
       <ToggleButtons setToggle={setToggle} />
       {toggle.expense && <AddExp label={`expense`} />}
       {toggle.earning && <AddExp label={`earning`} />}
-      
-      {/* 2. Set this container to grab all remaining vertical space smoothly */}
-      <section className="flex flex-col flex-1 min-h-0 mt-2">
-        <div>
+      <section>
+        <div className="">
           <h3 className="text-center text-mist-400 text-2xl font-bold capitalize">
             Hello, {user?.name}
           </h3>
-          <div className="bg-gray-900 text-white p-6 md:p-8 rounded-3xl shadow-xl grid grid-cols-2 my-4 border border-gray-800">
+          <div className="bg-gray-900 text-white p-8 rounded-3xl shadow-xl grid grid-cols-2 my-6 border border-gray-800">
             <div className="ml-auto order-2">
               <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
-                Total Earning
+                Toal Earning
               </span>
-              <h3 className="text-green-400 text-3xl md:text-4xl font-bold mt-2 tracking-tighter">
+              <h3 className="text-green-400 text-4xl font-bold mt-2 tracking-tighter">
                 ₹{totals?.totalEarn || 0}
               </h3>
             </div>
             <div className="mr-auto order-1">
               <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
-                Total Expense
+                Toal Expense
               </span>
-              <h3 className="text-3xl md:text-4xl text-red-400 font-bold mt-2 tracking-tighter">
+              <h3 className="text-4xl text-red-400 font-bold mt-2 tracking-tighter">
                 ₹{totals?.totalSpent || 0}
               </h3>
             </div>
           </div>
-        </div>
-
-        {/* 3. This flex block acts as the bounded height container */}
-        <div className="mt-4 flex flex-col flex-1 min-h-0">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-3">
-            <h4 className="text-xl text-mist-300 font-semibold">
+          <div className="mt-8">
+            <h4 className="text-xl text-mist-300 font-semibold mb-4">
               Transaction History
             </h4>
-            <Filter />
-          </div>
 
-          {expense.length > 0 && (
-            <div className="grid grid-cols-12 gap-2 p-2 text-xs font-bold uppercase text-gray-500 border-b border-gray-800 sticky top-0 bg-slate-950 z-10">
-              <span className="col-span-1">#</span>
-              <span className="col-span-4">Description</span>
-              <span className="col-span-2">Type</span>
-              <span className="col-span-3 text-right">Amount</span>
-              <span className="col-span-2 text-right">Action</span>
-            </div>
-          )}
-
-          {/* 4. Removed fixed h-110 and substituted with automatic flexible overflow */}
-          <div className="overflow-y-auto flex-1 min-h-0 pr-1 scrollbar-thin scrollbar-thumb-gray-800">
-            {loading ? (
-              <p className="text-center mt-20 text-gray-400">Loading...</p>
-            ) : expense.length > 0 ? (
-              expense.map((ex, i) => (
-                <div
-                  key={ex._id || i}
-                  className="grid grid-cols-12 gap-2 items-center border-b border-slate-800 p-3 hover:bg-slate-900/50 transition-colors"
-                >
-                  <span className="col-span-1 text-gray-500 text-sm">
-                    {i + 1}
-                  </span>
-
-                  <span className="text-mist-400 col-span-4 capitalize font-medium truncate">
-                    {ex.name}
-                  </span>
-
-                  <span className="col-span-2">
-                    <span
-                      className={`text-[10px] px-2 pb-0.5 rounded-full border ${
-                        ex.type === "expense"
-                          ? "text-red-400 border-red-900 bg-red-900/20"
-                          : "text-emerald-400 border-emerald-900 bg-emerald-900/20"
-                      }`}
-                    >
-                      {ex.type}
-                    </span>
-                  </span>
-
-                  <span
-                    className={`col-span-3 text-right font-bold ${
-                      ex.type === "expense" ? "text-red-500" : "text-emerald-500"
-                    }`}
-                  >
-                    {ex.type === "expense" ? "-" : "+"}₹{ex.amount}
-                  </span>
-
-                  <div className="col-span-2 text-right">
-                    <button
-                      onClick={() => removeExpense(ex._id, ex.type)}
-                      className="text-xs text-gray-500 hover:text-red-500 transition-colors underline underline-offset-4"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-10 border-2 border-dashed border-slate-800 rounded-xl mt-2">
-                <p className="text-gray-500">No transactions found</p>
+            {/* Header for the list (Optional but recommended for clarity) */}
+            {expense.length > 0 && (
+              <div className="grid grid-cols-12 gap-2 p-2 text-xs font-bold uppercase text-gray-500 border-b border-gray-800">
+                <span className="col-span-1">#</span>
+                <span className="col-span-4">Description</span>
+                <span className="col-span-2">Type</span>
+                <span className="col-span-3 text-right">Amount</span>
+                <span className="col-span-2 text-right">Action</span>
               </div>
             )}
+
+            <div className="overflow-y-auto max-h-100 scrollbar-hide scrollbar">
+              {loading ? (
+                <p className="text-center mt-20">Loading...</p>
+              ) : expense.length > 0 ? (
+                expense.map((ex, i) => (
+                  <div
+                    key={ex._id || i}
+                    className="grid grid-cols-12 gap-2 items-center border-b border-slate-800 p-3 hover:bg-slate-900/50 transition-colors"
+                  >
+                    {/* Index */}
+                    <span className="col-span-1 text-gray-500 text-sm">
+                      {i + 1}
+                    </span>
+
+                    {/* Name */}
+                    <span className="text-mist-400 col-span-4 capitalize font-medium truncate">
+                      {ex.name}
+                    </span>
+
+                    {/* Type Badge */}
+                    <span className="col-span-2">
+                      <span
+                        className={`text-[10px] px-2 py-0.5 rounded-full border ${
+                          ex.type === "expense"
+                            ? "text-red-400 border-red-900 bg-red-900/20"
+                            : "text-emerald-400 border-emerald-900 bg-emerald-900/20"
+                        }`}
+                      >
+                        {ex.type}
+                      </span>
+                    </span>
+
+                    {/* Amount */}
+                    <span
+                      className={`col-span-3 text-right font-bold ${
+                        ex.type === "expense"
+                          ? "text-red-500"
+                          : "text-emerald-500"
+                      }`}
+                    >
+                      {ex.type === "expense" ? "-" : "+"}₹{ex.amount}
+                    </span>
+
+                    {/* Remove Action */}
+                    <div className="col-span-2 text-right">
+                      <button
+                        onClick={() => removeExpense(ex._id, ex.type)}
+                        className="text-xs text-gray-500 hover:text-red-500 transition-colors underline underline-offset-4"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-10 border-2 border-dashed border-slate-800 rounded-xl mt-4">
+                  <p className="text-gray-500">No transactions found</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
     </div>
   );
 }
-
-export default Home;
