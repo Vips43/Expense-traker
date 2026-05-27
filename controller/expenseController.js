@@ -29,21 +29,39 @@ export const addExpense = async (req, res) => {
 
 export const getExpense = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 13;
+    const skip = (page - 1) * limit;
+
     const [expenses, earnings] = await Promise.all([
-      Expense.find({ user: req.user._id }),
-      Earning.find({ user: req.user._id }),
+      Expense.find({ user: req.user._id })
+        .sort({ createdAt: -1 })
+        .limit(skip + limit),
+      Earning.find({ user: req.user._id })
+        .sort({ createdAt: -1 })
+        .limit(skip + limit),
     ]);
     if (!expenses && !earnings)
       return res.status(200).json({ msg: "no expense or earning found" });
-    const allTransactions = [...expenses, ...earnings].sort(
+    const transactions = [...expenses, ...earnings].sort(
       (a, b) => b.createdAt - a.createdAt,
     );
+    const totalItems = transactions.length;
+    const allTransactions = transactions.slice(skip, skip + limit);
 
-    res.status(200).json(allTransactions);
+    res.status(200).json({
+      allTransactions,
+      currentPage: page,
+      totalItems,
+      success: true,
+      totalPages: Math.ceil(totalItems / limit),
+    });
   } catch (error) {
+    console.error("CRITICAL ERROR inside getExpense controller:", error);
     res.status(500).json({ msg: "server error" });
   }
 };
+
 export const getTotalExp = async (req, res) => {
   try {
     const user = await User.findById(req?.user?._id).populate(
@@ -86,5 +104,30 @@ export const removeTxn = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "server error" });
+  }
+};
+
+export const getAllData = async (req, res) => {
+  try {
+    // 1. If req.user._id is a user ID, use find() with a query object
+    const expense = await Expense.find({ user: req.user._id });
+    const earning = await Earning.find({ user: req.user._id });
+
+    const onlineData = expense.filter((e) => e.mode === "online");
+    const offlineData = expense.filter((e) => e.mode === "offline");
+
+    const allData = [
+      {
+        onlineData: onlineData,
+        offlineData: offlineData,
+      },
+    ];
+
+    res.status(200).json(allData);
+  } catch (error) {
+    console.error("Error in getAllData:", error);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };

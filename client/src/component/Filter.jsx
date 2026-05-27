@@ -11,15 +11,34 @@ function Filter() {
     await filterExpense(val);
     console.log(val);
   };
-  
+
   return (
     <div className="flex items-center gap-5 ml-auto">
       <div className="flex items-center gap-2 text-sm">
-        <input type="radio" name="mode" value="all" id="all" onChange={handleChange} />
+        <input
+          type="radio"
+          name="mode"
+          value="all"
+          defaultChecked
+          id="all"
+          onChange={handleChange}
+        />
         <label htmlFor="all">All</label>
-        <input type="radio" name="mode" id="offline" value="offline" onChange={handleChange} />
+        <input
+          type="radio"
+          name="mode"
+          id="offline"
+          value="offline"
+          onChange={handleChange}
+        />
         <label htmlFor="offline">Offline</label>
-        <input type="radio" name="mode" id="online" value="online" onChange={handleChange} />
+        <input
+          type="radio"
+          name="mode"
+          id="online"
+          value="online"
+          onChange={handleChange}
+        />
         <label htmlFor="online">Online</label>
       </div>
       <div className="relative text-sm w-42">

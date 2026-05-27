@@ -46,19 +46,3 @@ export const filterTxns = async (req, res) => {
     return res.status(500).json({ msg: "server error!" });
   }
 };
-
-export const oldfilterTxns = async (req, res) => {
-  try {
-    const { query } = req.params; // This grabs "Bills", "Food", etc.
-
-    const transactions = await Expense.find({
-      user: req.user._id,
-      category: query,
-    });
-
-    res.status(200).json(transactions);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: "Server error" });
-  }
-};

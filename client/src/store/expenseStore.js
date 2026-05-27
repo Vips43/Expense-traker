@@ -4,7 +4,12 @@ import { useMyStore } from "./store";
 import api from "./api/axiosInstance";
 
 export const useExpStore = create((set, get) => ({
-  expense: [],
+  expense: {
+    allTransactions: [],
+    totalItems: 0,
+    totalPages: 1,
+    currentPage: 1,
+  }, // Structured object instead of an empty array
   totals: [],
   loading: false,
   err: null,
@@ -31,9 +36,9 @@ export const useExpStore = create((set, get) => ({
       }
       if (res.ok) {
         get().totalExp();
-        get().getExpense();
+        // Fall back to the current active page
+        get().getExpense(get().expense.currentPage || 1);
       }
-      // const data = await res.json();
       set({ loading: false, err: null, success: true });
       setTimeout(() => {
         set({ success: false });
@@ -43,13 +48,14 @@ export const useExpStore = create((set, get) => ({
       set({ loading: false, err: "internal server error", success: false });
     }
   },
-  getExpense: async () => {
+
+  getExpense: async (page = 1, limit = 14) => {
     const token = useAuthStore.getState().user?.token;
     if (!token) return useMyStore.getState().setAlert("invalid token!");
 
     set({ loading: true, err: null });
     try {
-      const res = await fetch(`/api/expense`, {
+      const res = await fetch(`/api/expense?page=${page}&limit=${limit}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -70,6 +76,7 @@ export const useExpStore = create((set, get) => ({
       useMyStore.getState().setAlert("");
     }
   },
+
   addEarning: async (earning) => {
     const token = useAuthStore.getState().user?.token;
     if (!token) return console.error("No token found");
@@ -90,7 +97,7 @@ export const useExpStore = create((set, get) => ({
       }
       if (res.ok) {
         get().totalExp();
-        get().getExpense();
+        get().getExpense(get().expense.currentPage || 1);
       }
       const data = await res.json();
 
@@ -102,6 +109,7 @@ export const useExpStore = create((set, get) => ({
       set({ loading: false, err: "internal server error", success: false });
     }
   },
+
   totalExp: async () => {
     const token = useAuthStore.getState().user?.token;
     if (!token) return console.error("No token found");
@@ -129,6 +137,7 @@ export const useExpStore = create((set, get) => ({
       set({ loading: false, err: "internal server error" });
     }
   },
+
   removeExpense: async (id, type) => {
     const token = useAuthStore.getState().user?.token;
     if (!token) return console.error("No token found");
@@ -141,19 +150,22 @@ export const useExpStore = create((set, get) => ({
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (res.ok) {
         get().totalExp();
-        get().getExpense();
+        get().getExpense(get().expense.currentPage || 1);
+      } else {
+        set({ loading: false });
       }
-      const data = await res.json();
-      const updatedExpenses = expense.filter((item) => item._id !== id);
-
-      set({ expense: updatedExpenses, loading: false, err: null });
     } catch (error) {
       set({ loading: false, err: "internal server error" });
     }
   },
+
   filterExpense: async (query) => {
+    if (query === "all") {
+      return get().getExpense();
+    }
     const token = useAuthStore.getState().user?.token;
     if (!token) return console.error("No token found");
     try {

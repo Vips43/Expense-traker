@@ -2,6 +2,7 @@ import e from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import {
   addExpense,
+  getAllData,
   getExpense,
   getTotalExp,
   removeTxn,
@@ -15,6 +16,7 @@ router.post("/earning", protect, addEarning);
 router.get("/expense", protect, getExpense);
 router.get("/totalExp", protect, getTotalExp);
 router.post("/filter/:query", protect, filterTxns);
+router.get("/allData", protect, getAllData);
 
 router.delete("/txn/:id", protect, removeTxn);
 
