@@ -30,7 +30,7 @@ export const addExpense = async (req, res) => {
 export const getExpense = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 13;
+    const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
     const [expenses, earnings] = await Promise.all([
@@ -96,9 +96,6 @@ export const removeTxn = async (req, res) => {
     else return res.status(400).json({ msg: "Invalid transaction type" });
 
     if (!txn) return res.status(404).json({ msg: "Transaction not found" });
-
-    // console.log("userID: ", req.user?._id.toString());
-    // await txn.delete(req.user?._id.toString() || "system");
 
     res.status(200).json({ msg: "Transaction deleted", txn });
   } catch (error) {

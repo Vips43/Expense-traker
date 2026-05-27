@@ -9,7 +9,7 @@ function Filter() {
     const val = e.target.value;
     if (val === "NA") return;
     await filterExpense(val);
-    console.log(val);
+    
   };
 
   return (

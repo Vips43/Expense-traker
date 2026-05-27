@@ -20,8 +20,7 @@ function Home() {
   }, [token]);
 
   return (
-    // Take exactly 100% of the parent <main> height
-    <div className="flex flex-col h-full max-h-full overflow-hidden gap-4">
+    <div className="flex flex-col h-full overflow-hidden gap-4">
       <div className="shrink-0">
         <ToggleButtons setToggle={setToggle} />
         {toggle.expense && <AddExp label={`expense`} />}

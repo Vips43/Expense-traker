@@ -26,6 +26,7 @@ function TransactionHistory() {
 
   const getRowIndex = (index) => (currentPage - 1) * itemsPerPage + index + 1;
 
+  console.log(expense)
   return (
     <section className="flex flex-col h-full">
       <div className="flex flex-col flex-1 min-h-0 mt-4">

@@ -25,24 +25,38 @@ export const addEarning = async (req, res) => {
 export const filterTxns = async (req, res) => {
   const { query } = req.params;
   try {
-    let txns;
-    if (query === "all") {
-      txns = await Expense.find({ user: req.user._id });
-    } else {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ msg: "Not authorized" });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    let filterCriteria = { user: req.user._id };
+
+    if (query !== "all") {
       const isMode = query === "online" || query === "offline";
-      const filterCriteria = {
+      filterCriteria = {
         user: req.user._id,
         ...(isMode ? { mode: query } : { category: query }),
       };
-
-      txns = await Expense.find(filterCriteria);
     }
-    if (!txns || txns.length === 0) {
-      return res.status(404).json({ msg: "No transactions found!" });
-    }
+    const totalItems = await Expense.countDocuments(filterCriteria);
+    const txns = await Expense.find(filterCriteria)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-    res.status(200).json(txns);
+    res.status(200).json({
+      allTransactions: txns || [],
+      currentPage: page,
+      totalItems,
+      success: true,
+      totalPages: Math.ceil(totalItems / limit) || 1,
+    });
   } catch (error) {
+    console.error("Filter Controller Error:", error);
     return res.status(500).json({ msg: "server error!" });
   }
 };
