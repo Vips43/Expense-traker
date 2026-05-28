@@ -4,7 +4,7 @@ import Filter from "../Filter";
 
 function TransactionHistory() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const itemsPerPage = 10;
 
   const { expense, removeExpense, loading, getExpense } = useExpStore();
 
