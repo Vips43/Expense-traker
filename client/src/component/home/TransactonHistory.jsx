@@ -40,7 +40,7 @@ function TransactionHistory() {
         {/* Table Headers */}
         {totalItems > 0 && (
           <div
-            className={`"grid grid-cols-12 gap-2 p-2 text-xs font-bold uppercase text-gray-500 border-b border-gray-800 shrink-0 bg-slate-950 `}
+            className={`grid grid-cols-12 gap-2 p-2 text-xs font-bold uppercase text-gray-500 border-b border-gray-800 shrink-0 bg-slate-950 `}
           >
             <span className="col-span-1">#</span>
             <span className="col-span-4">Description</span>
