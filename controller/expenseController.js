@@ -128,3 +128,85 @@ export const getAllData = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+export const chartData = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // 1. Monthly Summary (Grouped by Year, Month, and Transaction Type)
+    const monthlyData = await Expense.aggregate([
+      { $match: { user: userId } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+            type: "$type", // Splits 'expense' vs 'earning'
+          },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]);
+
+    // 2. Weekly Summary (Grouped by Year, Week, and Transaction Type)
+    const weeklyData = await Expense.aggregate([
+      { $match: { user: userId } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            week: { $week: "$createdAt" },
+            type: "$type",
+          },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.week": 1 } }, // Fixed the broken field reference here
+    ]);
+
+    // 3. Category Distribution (Only relevant for expenses: Food, Bills, etc.)
+    const categoryDistribution = await Expense.aggregate([
+      { $match: { user: userId, type: "expense" } },
+      {
+        $group: {
+          _id: "$category", // e.g., 'Food', 'Entertainment'
+          totalSpent: { $sum: "$amount" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { totalSpent: -1 } }, // Most expensive categories first
+    ]);
+
+    // 4. Payment Method Distribution (e.g., Online vs Offline / Mode)
+    const paymentModeDistribution = await Expense.aggregate([
+      { $match: { user: userId } },
+      {
+        $group: {
+          _id: "$paymentMethod", // 'Online' or 'Offline' based on your UI filters
+          totalAmount: { $sum: "$amount" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { totalAmount: -1 } },
+    ]);
+
+    // Send the compiled insights back to your React client
+    return res.status(200).json({
+      success: true,
+      data: {
+        monthly: monthlyData,
+        weekly: weeklyData,
+        categories: categoryDistribution,
+        modes: paymentModeDistribution,
+      },
+    });
+  } catch (error) {
+    console.error("Error generating chart data:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error occurred while calculating analytics data.",
+      error: error.message,
+    });
+  }
+};

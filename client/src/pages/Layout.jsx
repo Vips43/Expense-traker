@@ -35,7 +35,6 @@ function Layout() {
       <Navbar />
       <Analytics />
 
-      {/* min-h-0 prevents the main container from growing beyond the remaining viewport height */}
       <main className="flex-1 min-h-0 p-4 overflow-hidden">
         <Outlet />
       </main>
