@@ -141,7 +141,7 @@ export const chartData = async (req, res) => {
           _id: {
             year: { $year: "$createdAt" },
             month: { $month: "$createdAt" },
-            type: "$type", // Splits 'expense' vs 'earning'
+            type: "$type", 
           },
           totalAmount: { $sum: "$amount" },
         },
