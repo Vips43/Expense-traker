@@ -49,7 +49,7 @@ export const useExpStore = create((set, get) => ({
     }
   },
 
-  getExpense: async (page = 1, limit = 10) => {
+  getExpense: async (page = 1, limit = 13) => {
     const token = useAuthStore.getState().user?.token;
     if (!token) return useMyStore.getState().setAlert("invalid token!");
 
@@ -162,7 +162,7 @@ export const useExpStore = create((set, get) => ({
     }
   },
 
-  filterExpense: async (query, page = 1, limit = 10) => {
+  filterExpense: async (query, page = 1, limit = 13) => {
     if (query === "all") {
       return get().getExpense(page, limit);
     }
@@ -174,7 +174,7 @@ export const useExpStore = create((set, get) => ({
       const res = await fetch(
         `/api/filter/${query}?page=${page}&limit=${limit}`,
         {
-          method: "POST", 
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

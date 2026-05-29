@@ -30,7 +30,7 @@ export const filterTxns = async (req, res) => {
     }
 
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 13;
     const skip = (page - 1) * limit;
 
     let filterCriteria = { user: req.user._id };

@@ -30,7 +30,7 @@ export const addExpense = async (req, res) => {
 export const getExpense = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 13;
     const skip = (page - 1) * limit;
 
     const [expenses, earnings] = await Promise.all([
