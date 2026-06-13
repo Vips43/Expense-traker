@@ -60,12 +60,12 @@ function TransactionHistory() {
         {/* Scrollable List */}
         <div className="overflow-y-auto flex-1 pr-1 current-scrollbar">
           {loading ? (
-            <p className="text-center mt-10 text-gray-400">Loading...</p>
+            <p className="mx-auto p-5 border-2 border-b-transparent w-10 h-10 rounded-full animate-spin mt-20"></p>
           ) : totalItems > 0 ? (
             allTransactions.map((ex, i) => {
               const isExpanded = toggleId === ex._id;
               return (
-                // 4. Wrapped inside a block element to hold the subgrid row cleanly
+                
                 <div 
                   key={ex._id || i} 
                   className={`border-b border-slate-800 transition-colors cursor-pointer ${

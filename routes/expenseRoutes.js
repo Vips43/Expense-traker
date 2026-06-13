@@ -2,6 +2,7 @@ import e from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import {
   addExpense,
+  chartData,
   getAllData,
   getExpense,
   getTotalExp,
@@ -17,7 +18,8 @@ router.get("/expense", protect, getExpense);
 router.get("/totalExp", protect, getTotalExp);
 router.post("/filter/:query", protect, filterTxns);
 router.get("/allData", protect, getAllData);
-router.get("/allData", protect, getAllData);
+
+router.get("/chartData", protect, chartData);
 
 router.delete("/txn/:id", protect, removeTxn);
 

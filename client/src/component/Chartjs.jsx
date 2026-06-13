@@ -19,21 +19,26 @@ ChartJS.register(
   Legend,
 );
 
-function Chartjs({ totalEarning = 0, totalExpense = 0, expense }) {
-
+function Chartjs({ categories, totalEarning = 0, totalExpense = 0, expense }) {
+  const keys = Object.keys(categories);
+  const values = Object.values(categories);
   const data = {
-    labels: ["Total Earning", "Total Expense"],
+    // labels: ["Total Earning", "Total Expense"],
+    labels: keys,
     datasets: [
       {
         label: "Amount (₹)",
-        data: [totalEarning, totalExpense],
+        // data: [totalEarning, totalExpense],
+        data: values,
         backgroundColor: [
-          "rgba(16, 185, 129, 0.2)", // Emerald-500 with opacity
-          "rgba(239, 68, 68, 0.2)", // Red-500 with opacity
+          "rgba(16, 185, 129, 0.2)", // Emerald-500
+          "rgba(239, 68, 68, 0.2)", // Red-500
+          "rgba(249, 115, 22, 0.2)", // Orange-500 (Distinct third color)
         ],
         borderColor: [
           "rgb(16, 185, 129)", // Emerald-500
           "rgb(239, 68, 68)", // Red-500
+          "rgb(249, 115, 22)", // Orange-500
         ],
         borderWidth: 1,
         borderRadius: 6, // Rounded bars look modern

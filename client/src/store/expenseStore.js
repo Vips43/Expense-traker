@@ -49,7 +49,7 @@ export const useExpStore = create((set, get) => ({
     } catch (error) {
       console.error(error);
       set({ loading: false, err: "internal server error", success: false });
-      throw error
+      throw error;
     }
   },
 
@@ -190,6 +190,27 @@ export const useExpStore = create((set, get) => ({
       set({ expense: data, loading: false, err: null });
     } catch (error) {
       set({ loading: false, err: "Failed to filter" });
+    }
+  },
+
+  chartData: async () => {
+    const token = useAuthStore.getState().user?.token;
+    if (!token) return console.error("No token found");
+    try {
+      set({ loading: true, err: null });
+
+      const res = await fetch(`/api/chartData`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      set({ expense: data, loading: false, err: null });
+    } catch (error) {
+      set({ loading: false, err: "Failed to get data" });
     }
   },
 }));

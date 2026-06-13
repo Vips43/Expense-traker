@@ -165,10 +165,9 @@ export const chartData = async (req, res) => {
           totalAmount: { $sum: "$amount" },
         },
       },
-      { $sort: { "_id.year": 1, "_id.week": 1 } }, // Fixed the broken field reference here
+      { $sort: { "_id.year": 1, "_id.week": 1 } }, 
     ]);
 
-    // 3. Category Distribution (Only relevant for expenses: Food, Bills, etc.)
     const categoryDistribution = await Expense.aggregate([
       { $match: { user: userId, type: "expense" } },
       {
@@ -178,23 +177,21 @@ export const chartData = async (req, res) => {
           count: { $sum: 1 },
         },
       },
-      { $sort: { totalSpent: -1 } }, // Most expensive categories first
+      { $sort: { totalSpent: -1 } }, 
     ]);
 
-    // 4. Payment Method Distribution (e.g., Online vs Offline / Mode)
     const paymentModeDistribution = await Expense.aggregate([
       { $match: { user: userId } },
       {
         $group: {
-          _id: "$paymentMethod", // 'Online' or 'Offline' based on your UI filters
+          _id: "$paymentMethod", 
           totalAmount: { $sum: "$amount" },
           count: { $sum: 1 },
         },
       },
       { $sort: { totalAmount: -1 } },
     ]);
-
-    // Send the compiled insights back to your React client
+    
     return res.status(200).json({
       success: true,
       data: {

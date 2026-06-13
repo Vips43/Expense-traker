@@ -10,7 +10,21 @@ function Analytics() {
   const toggle = useMyStore((state) => state.toggle);
   const { totalExp, totals, expense } = useExpStore();
 
-  // console.log(totals, expense)
+  const categories = expense.allTransactions.reduce((acc, currTxn) => {
+    const { category, amount } = currTxn;
+
+    // Initialize key if it doesn't exist
+    if (!acc[category]) {
+      acc[category] = 0;
+    }
+
+    // Add amount to the category key
+    acc[category] += amount;
+
+    return acc;
+  }, {});
+
+
   return (
     <section
       className={`absolute inset-0 z-50 bg-slate-950/40 backdrop-blur-sm transition-opacity duration-300 ${
@@ -38,9 +52,11 @@ function Analytics() {
             totalEarning={totals.totalEarn}
             totalExpense={totals.totalSpent}
             expense={expense}
+            categories={categories}
           />
-          <Multichart expense={expense}/>
+          <Multichart expense={expense} />
         </div>
+        <div></div>
       </div>
     </section>
   );
