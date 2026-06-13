@@ -45,7 +45,7 @@ export const loginUser = async (req, res) => {
         expiresIn: process.env.JWT_EXPIRY,
       },
     );
-    const signUpDate = dayjs(user.createdAt || user.updatedAt);
+    const signUpDate = dayjs(user.createdAt);
 
     res.status(200).json({
       msg: "Login successfull",
@@ -54,10 +54,22 @@ export const loginUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        date: signUpDate.fromNow(true),
       },
     });
   } catch (error) {
+    console.log("login error: ",error)
     res.status(500).json({ msg: "server error" });
+  }
+};
+
+export const getUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id || req.user._id).select("-password");
+    if (!user) res.status(400).json({ msg: "User not found!" });
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ msg: "error in user parsing" });
   }
 };

@@ -2,6 +2,7 @@ import { useId } from "react";
 import { HiPlus, HiArrowLeft } from "react-icons/hi";
 import { useExpStore } from "../store/expenseStore";
 import { useMyStore } from "../store/store";
+import toast from "react-hot-toast";
 
 function AddExp({ label }) {
   const id = useId();
@@ -15,12 +16,23 @@ function AddExp({ label }) {
     const formData = new FormData(e.target);
     const expData = Object.fromEntries(formData);
 
-    console.log(expData);
-    label === "expense" && (await setExpense(expData));
-    label === "earning" && (await addEarning(expData));
-    e.target.reset();
+    try {
+      if (label === "expense") {
+        await setExpense(expData);
+      } else if (label === "earning") {
+        await addEarning(expData);
+      } else {
+        throw new Error("Invalid transaction type");
+      }
+      e.target.reset();
+      toast.success("Sucessfully added");
+      setToggle(label);
+    } catch (error) {
+      toast.error(err || error.msg || "Server error");
+      setToggle(label);
+    }
   };
-
+  err && console.log(err);
   return (
     <section className="fixed inset-0 w-full h-dvh grid bg-black/70 place-items-center z-50">
       <form

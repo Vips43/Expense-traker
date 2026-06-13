@@ -17,6 +17,7 @@ router.get("/expense", protect, getExpense);
 router.get("/totalExp", protect, getTotalExp);
 router.post("/filter/:query", protect, filterTxns);
 router.get("/allData", protect, getAllData);
+router.get("/allData", protect, getAllData);
 
 router.delete("/txn/:id", protect, removeTxn);
 

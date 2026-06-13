@@ -10,6 +10,7 @@ function Analytics() {
   const toggle = useMyStore((state) => state.toggle);
   const { totalExp, totals, expense } = useExpStore();
 
+  // console.log(totals, expense)
   return (
     <section
       className={`absolute inset-0 z-50 bg-slate-950/40 backdrop-blur-sm transition-opacity duration-300 ${

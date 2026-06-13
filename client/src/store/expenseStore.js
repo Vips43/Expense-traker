@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
 import { useMyStore } from "./store";
-import api from "./api/axiosInstance";
 
 export const useExpStore = create((set, get) => ({
   expense: {
@@ -9,7 +8,7 @@ export const useExpStore = create((set, get) => ({
     totalItems: 0,
     totalPages: 1,
     currentPage: 1,
-  }, // Structured object instead of an empty array
+  },
   totals: [],
   loading: false,
   err: null,
@@ -34,6 +33,10 @@ export const useExpStore = create((set, get) => ({
         useAuthStore.getState().logout();
         return;
       }
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `Server error: ${res.status}`);
+      }
       if (res.ok) {
         get().totalExp();
         // Fall back to the current active page
@@ -46,10 +49,11 @@ export const useExpStore = create((set, get) => ({
     } catch (error) {
       console.error(error);
       set({ loading: false, err: "internal server error", success: false });
+      throw error
     }
   },
 
-  getExpense: async (page = 1, limit = 13) => {
+  getExpense: async (page = 1, limit = 15) => {
     const token = useAuthStore.getState().user?.token;
     if (!token) return useMyStore.getState().setAlert("invalid token!");
 
@@ -189,4 +193,3 @@ export const useExpStore = create((set, get) => ({
     }
   },
 }));
-

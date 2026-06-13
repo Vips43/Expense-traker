@@ -4,6 +4,7 @@ import { IoIosArrowForward, IoIosArrowDown } from "react-icons/io";
 import { useMyStore } from "../store/store";
 import { useNavigate } from "react-router-dom";
 import { Button } from "flowbite-react";
+import { useEffect } from "react";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -11,6 +12,14 @@ function Navbar() {
   const user = useAuthStore((state) => state.user);
   const setToggle = useMyStore((state) => state.setToggle);
   const toggle = useMyStore((state) => state.toggle);
+  const me = useMyStore((state) => state.me);
+  const getUser = useMyStore((state) => state.getUser);
+
+  useEffect(() => {
+    getUser;
+  }, []);
+
+  console.log(me);
 
   return (
     <aside

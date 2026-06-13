@@ -8,6 +8,7 @@ export const useAuthStore = create((set, get) => ({
   err: null,
   loading: false,
   msg: null,
+  me: null,
   isAuthenticated: !!loggedUser,
 
   register: async (creds) => {
@@ -42,11 +43,31 @@ export const useAuthStore = create((set, get) => ({
         date: data.user.date,
         msg: data.msg,
       };
+
       localStorage.setItem("user", JSON.stringify(user));
       set({ user: user, loading: false, isAuthenticated: true, err: null });
     } catch (error) {
       console.error("login failed", error.message);
       set({ loading: false, err: "Server error" });
+    }
+  },
+  
+  getUser: async () => {
+    const token = get().user?.token;
+    if (!token) return console.error("No token found");
+    try {
+      set({ loading: true });
+      const user = await fetch(`${BASE_URL}/api/auth/user`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await user.json();
+      set({ me: data, loading: false });
+    } catch (error) {
+      set({ loading: false, msg: "Server error" });
     }
   },
   logout: () => {

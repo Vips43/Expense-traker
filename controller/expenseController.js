@@ -30,25 +30,28 @@ export const addExpense = async (req, res) => {
 export const getExpense = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 13;
+    const limit = parseInt(req.query.limit)||15;
     const skip = (page - 1) * limit;
 
-    const [expenses, earnings] = await Promise.all([
+    const [expenses, earnings, expenseCount, earningcount] = await Promise.all([
       Expense.find({ user: req.user._id })
         .sort({ createdAt: -1 })
         .limit(skip + limit),
       Earning.find({ user: req.user._id })
         .sort({ createdAt: -1 })
         .limit(skip + limit),
+      Expense.countDocuments({ user: req.user._id }),
+      Earning.countDocuments({ user: req.user._id }),
     ]);
-    if (!expenses && !earnings)
+    if (expenses.length === 0 && earnings === 0)
       return res.status(200).json({ msg: "no expense or earning found" });
     const transactions = [...expenses, ...earnings].sort(
       (a, b) => b.createdAt - a.createdAt,
     );
-    const totalItems = transactions.length;
+    const totalItems = expenseCount + earningcount;
     const allTransactions = transactions.slice(skip, skip + limit);
 
+    console.log(limit, totalItems);
     res.status(200).json({
       allTransactions,
       currentPage: page,
@@ -141,7 +144,7 @@ export const chartData = async (req, res) => {
           _id: {
             year: { $year: "$createdAt" },
             month: { $month: "$createdAt" },
-            type: "$type", 
+            type: "$type",
           },
           totalAmount: { $sum: "$amount" },
         },

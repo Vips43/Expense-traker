@@ -6,6 +6,7 @@ import Navbar from "../component/Navbar";
 import { Button } from "flowbite-react";
 import { GrAnalytics } from "react-icons/gr";
 import Analytics from "../component/Analytics";
+import { Toaster } from "react-hot-toast";
 
 function Layout() {
   const setToggle = useMyStore((state) => state.setToggle);
@@ -23,6 +24,7 @@ function Layout() {
           </div>
           <h1 className="font-bold">Expense Tracker</h1>
         </div>
+        <Toaster />
         <Button
           color="alternative"
           className="text-2xl text-cyan-600!"

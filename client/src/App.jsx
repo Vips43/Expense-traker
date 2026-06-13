@@ -6,7 +6,6 @@ import Home from "./pages/Home";
 import Register from "./component/Register";
 import Login from "./component/Login";
 
-
 function App() {
   return (
     <>
