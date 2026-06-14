@@ -13,6 +13,7 @@ export const useExpStore = create((set, get) => ({
   loading: false,
   err: null,
   success: false,
+  charts:[],
 
   setExpense: async (exp) => {
     const token = useAuthStore.getState().user?.token;
@@ -208,7 +209,8 @@ export const useExpStore = create((set, get) => ({
       });
 
       const data = await res.json();
-      set({ expense: data, loading: false, err: null });
+      
+      set({ charts: data, loading: false, err: null });
     } catch (error) {
       set({ loading: false, err: "Failed to get data" });
     }

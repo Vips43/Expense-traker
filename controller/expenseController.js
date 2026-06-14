@@ -30,7 +30,7 @@ export const addExpense = async (req, res) => {
 export const getExpense = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit)||15;
+    const limit = parseInt(req.query.limit) || 15;
     const skip = (page - 1) * limit;
 
     const [expenses, earnings, expenseCount, earningcount] = await Promise.all([
@@ -136,6 +136,7 @@ export const chartData = async (req, res) => {
   try {
     const userId = req.user._id;
 
+    console.log(userId);
     // 1. Monthly Summary (Grouped by Year, Month, and Transaction Type)
     const monthlyData = await Expense.aggregate([
       { $match: { user: userId } },
@@ -161,11 +162,12 @@ export const chartData = async (req, res) => {
             year: { $year: "$createdAt" },
             week: { $week: "$createdAt" },
             type: "$type",
+            category: "$category",
           },
           totalAmount: { $sum: "$amount" },
         },
       },
-      { $sort: { "_id.year": 1, "_id.week": 1 } }, 
+      { $sort: { "_id.year": 1, "_id.week": 1 } },
     ]);
 
     const categoryDistribution = await Expense.aggregate([
@@ -177,21 +179,21 @@ export const chartData = async (req, res) => {
           count: { $sum: 1 },
         },
       },
-      { $sort: { totalSpent: -1 } }, 
+      { $sort: { totalSpent: -1 } },
     ]);
 
     const paymentModeDistribution = await Expense.aggregate([
       { $match: { user: userId } },
       {
         $group: {
-          _id: "$paymentMethod", 
+          _id: "$paymentMethod",
           totalAmount: { $sum: "$amount" },
           count: { $sum: 1 },
         },
       },
       { $sort: { totalAmount: -1 } },
     ]);
-    
+
     return res.status(200).json({
       success: true,
       data: {

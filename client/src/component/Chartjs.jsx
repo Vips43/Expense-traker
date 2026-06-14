@@ -19,21 +19,19 @@ ChartJS.register(
   Legend,
 );
 
-function Chartjs({ categories, totalEarning = 0, totalExpense = 0, expense }) {
-  const keys = Object.keys(categories);
-  const values = Object.values(categories);
+function Chartjs({ labels, values }) {
   const data = {
     // labels: ["Total Earning", "Total Expense"],
-    labels: keys,
+    labels: labels,
     datasets: [
       {
         label: "Amount (₹)",
         // data: [totalEarning, totalExpense],
         data: values,
         backgroundColor: [
-          "rgba(16, 185, 129, 0.2)", // Emerald-500
-          "rgba(239, 68, 68, 0.2)", // Red-500
-          "rgba(249, 115, 22, 0.2)", // Orange-500 (Distinct third color)
+          "rgba(16, 185, 129, 0.2)",
+          "rgba(239, 68, 68, 0.2)",
+          "rgba(249, 115, 22, 0.2)",
         ],
         borderColor: [
           "rgb(16, 185, 129)", // Emerald-500
@@ -52,7 +50,7 @@ function Chartjs({ categories, totalEarning = 0, totalExpense = 0, expense }) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false, // Hiding legend since labels make it clear
+        display: true, // Hiding legend since labels make it clear
       },
     },
     scales: {

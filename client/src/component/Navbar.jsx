@@ -19,8 +19,6 @@ function Navbar() {
     getUser;
   }, []);
 
-  console.log(me);
-
   return (
     <aside
       className={`absolute inset-0 z-50 bg-slate-950/40 backdrop-blur-sm transition-opacity duration-300 ${
