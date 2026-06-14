@@ -20,32 +20,24 @@ app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api", expenseRoutes);
 
-
 const backfillTimestamps = async () => {
   try {
+    const users = await User.find({}).lean();
+    console.log(`Found ${users.length} users`);
 
-    const usersToUpdate = await User.find({ createdAt: { $exists: false } });
-    console.log(`Found ${usersToUpdate.length} users needing updates.`);
+    for (const user of users) {
+      const creationDate = user._id.getTimestamp();
 
-    for (const user of usersToUpdate) {
-      const creationDate = user._id.getTimestamp(); 
-
-      await User.updateOne(
+      await User.collection.updateOne(  // native driver, bypasses Mongoose timestamps
         { _id: user._id },
-        { 
-          $set: { 
-            createdAt: creationDate, 
-            updatedAt: creationDate 
-          } 
-        },
-        { timestamps: false } 
+        { $set: { createdAt: creationDate, updatedAt: creationDate } }
       );
     }
 
-    console.log("All existing users backfilled successfully!");
+    console.log("Done!");
     process.exit(0);
   } catch (error) {
-    console.error("Backfill failed:", error);
+    console.error("Failed:", error);
     process.exit(1);
   }
 };

@@ -12,13 +12,14 @@ function Navbar() {
   const user = useAuthStore((state) => state.user);
   const setToggle = useMyStore((state) => state.setToggle);
   const toggle = useMyStore((state) => state.toggle);
-  const me = useMyStore((state) => state.me);
-  const getUser = useMyStore((state) => state.getUser);
+
+  const { getUser, me } = useAuthStore();
 
   useEffect(() => {
-    getUser;
+    getUser();
   }, []);
 
+  console.log(me)
   return (
     <aside
       className={`absolute inset-0 z-50 bg-slate-950/40 backdrop-blur-sm transition-opacity duration-300 ${
@@ -73,9 +74,9 @@ function Navbar() {
                   Account Info
                 </span>
                 <p className="text-xs text-slate-400">
-                  Member since{" "}
+                  Member since: {" "}
                   <span className="font-medium text-slate-300">
-                    {user?.date || "recently"}
+                    {me?.date || "recently"}
                   </span>
                 </p>
               </div>

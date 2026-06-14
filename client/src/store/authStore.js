@@ -57,7 +57,7 @@ export const useAuthStore = create((set, get) => ({
     if (!token) return console.error("No token found");
     try {
       set({ loading: true });
-      const user = await fetch(`${BASE_URL}/api/auth/user`, {
+      const user = await fetch(`/api/auth/user`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
