@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import expenseRoutes from "./routes/expenseRoutes.js";
 import cors from "cors";
 import User from "./model/userModel.js";
+import reportRoutes from "./routes/reportRoutes.js";
 
 dotenv.config();
 const PORT = 3000;
@@ -19,6 +20,7 @@ app.use(cors());
 
 app.use("/api/auth", authRoutes);
 app.use("/api", expenseRoutes);
+app.use("/api", reportRoutes);
 
 const backfillTimestamps = async () => {
   try {
@@ -28,9 +30,10 @@ const backfillTimestamps = async () => {
     for (const user of users) {
       const creationDate = user._id.getTimestamp();
 
-      await User.collection.updateOne(  // native driver, bypasses Mongoose timestamps
+      await User.collection.updateOne(
+        // native driver, bypasses Mongoose timestamps
         { _id: user._id },
-        { $set: { createdAt: creationDate, updatedAt: creationDate } }
+        { $set: { createdAt: creationDate, updatedAt: creationDate } },
       );
     }
 

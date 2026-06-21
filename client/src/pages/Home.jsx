@@ -19,11 +19,12 @@ function Home() {
     if (token) getExpense();
   }, [token]);
 
+  
+
   return (
     <div className="flex flex-col h-full overflow-hidden gap-4">
       <div className="shrink-0">
-        
-    
+
         <ToggleButtons setToggle={setToggle} />
         {toggle.expense && <AddExp label={`expense`} />}
         {toggle.earning && <AddExp label={`earning`} />}

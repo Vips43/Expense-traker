@@ -1,7 +1,6 @@
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import Layout, { ProtectedRoute } from "./pages/Layout";
-import AddExp from "./pages/AddExp";
 import Home from "./pages/Home";
 import Register from "./component/Register";
 import Login from "./component/Login";

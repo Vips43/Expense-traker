@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { HiPlus, HiArrowLeft } from "react-icons/hi";
+import { HiArrowLeft } from "react-icons/hi";
 import { useExpStore } from "../store/expenseStore";
 import { useMyStore } from "../store/store";
 import toast from "react-hot-toast";
@@ -134,7 +134,8 @@ function AddExp({ label }) {
 
         <button
           type="submit"
-          className="mt-2 flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-900/20"
+          className="mt-2 flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
+          disabled={loading}
         >
           {loading
             ? `Adding ${label}...`
