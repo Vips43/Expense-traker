@@ -12,12 +12,15 @@ dotenv.config();
 const PORT = 3000;
 const app = express();
 
-let mongo_url;
-if (process.env.NODE_ENV !== "production") {
-  mongo_url = process.env.MONGO_LOCAL;
-} else {
-  mongo_url = process.env.MONGO_URL;
+// Replace your existing if/else block with this:
+const mongo_url = process.env.MONGO_URL || process.env.MONGO_LOCAL;
+
+if (!mongo_url) {
+  console.error("FATAL ERROR: MONGO_URL is not defined in environment variables.");
+  process.exit(1);
 }
+
+connectDB(mongo_url);
 
 connectDB(mongo_url);
 
