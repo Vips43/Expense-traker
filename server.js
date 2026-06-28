@@ -11,7 +11,14 @@ import reportRoutes from "./routes/reportRoutes.js";
 dotenv.config();
 const PORT = 3000;
 const app = express();
-const mongo_url = process.env.MONGO_URI;
+
+let mongo_url;
+if (process.env.NODE_ENV !== "production") {
+  mongo_url = process.env.MONGO_LOCAL;
+} else {
+  mongo_url = process.env.MONGO_URL;
+}
+
 connectDB(mongo_url);
 
 app.use(express.json());

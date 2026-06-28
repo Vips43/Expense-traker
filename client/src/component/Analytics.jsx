@@ -7,6 +7,7 @@ import Multichart from "./charts/Multichart";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/authStore";
+import { useChartData } from "../hooks/useExpense";
 
 function Analytics() {
   const [state, setState] = useState({
@@ -21,11 +22,12 @@ function Analytics() {
   const token = user?.token;
   const setToggle = useMyStore((state) => state.setToggle);
   const toggle = useMyStore((state) => state.toggle);
-  const { chartData, charts } = useExpStore();
+  // const { chartData, charts } = useExpStore();
 
-  useEffect(() => {
-    chartData();
-  }, []);
+  const { data: charts } = useChartData();
+  // useEffect(() => {
+  //   chartData();
+  // }, []);
   const categories = charts?.data?.categories || [];
   const labels = categories.map((c) => c._id ?? []);
   const values = categories.map((c) => c.totalSpent ?? []);

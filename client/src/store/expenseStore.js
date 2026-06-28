@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
 import { useMyStore } from "./store";
+import api from "./api/axiosInstance";
 
 export const useExpStore = create((set, get) => ({
   expense: {
@@ -13,9 +14,9 @@ export const useExpStore = create((set, get) => ({
   loading: false,
   err: null,
   success: false,
-  charts:[],
+  charts: [],
 
-  setExpense: async (exp) => {
+  setExpense: async (exp) => { //for add exp
     const token = useAuthStore.getState().user?.token;
     if (!token) return console.error("No token found");
 
@@ -83,30 +84,14 @@ export const useExpStore = create((set, get) => ({
   },
 
   addEarning: async (earning) => {
-    const token = useAuthStore.getState().user?.token;
-    if (!token) return console.error("No token found");
     try {
       set({ loading: true, err: null, success: false });
-      const res = await fetch(`/api/earning`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(earning),
-      });
-      if (res.status === 401) {
-        useMyStore.getState().setAlert("Token Expired! logging out");
-        useAuthStore.getState().logout();
-        return;
-      }
-      if (res.ok) {
-        get().totalExp();
-        get().getExpense(get().expense.currentPage || 1);
-      }
-      const data = await res.json();
+      const res = await api.post(`/api/earning`, earning);
 
-      set({ expense: data, loading: false, err: null, success: true });
+      get().totalExp();
+      get().getExpense(get().expense.currentPage || 1);
+
+      set({ expense: res.data, loading: false, err: null, success: true });
       setTimeout(() => {
         set({ success: false });
       }, 1500);
@@ -116,28 +101,11 @@ export const useExpStore = create((set, get) => ({
   },
 
   totalExp: async () => {
-    const token = useAuthStore.getState().user?.token;
-    if (!token) return console.error("No token found");
     try {
       set({ loading: true, err: null });
-      const res = await fetch(`/api/totalExp`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.status === 401) {
-        useMyStore.getState().setAlert("Token Expired! logging out");
-        useAuthStore.getState().logout();
-        return;
-      }
-      if (!res.ok) {
-        throw new Error(`Server error: ${res.status}`);
-      }
-      const data = await res.json();
+      const res = await api.get(`/totalExp`);
 
-      set({ totals: data, loading: false, err: null });
+      set({ totals: res.data, loading: false, err: null });
     } catch (error) {
       set({ loading: false, err: "internal server error" });
     }
@@ -209,7 +177,7 @@ export const useExpStore = create((set, get) => ({
       });
 
       const data = await res.json();
-      
+
       set({ charts: data, loading: false, err: null });
     } catch (error) {
       set({ loading: false, err: "Failed to get data" });

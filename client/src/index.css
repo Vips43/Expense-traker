@@ -12,4 +12,8 @@
     @apply w-full p-2.5 bg-slate-800 border border-slate-600 rounded-lg text-white outline-none transition-all;
     @apply focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
   }
+  .skeleton-h3 {
+    @apply w-28 h-10 bg-slate-800 rounded-md animate-pulse relative overflow-hidden;
+    @apply before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:to-transparent before:from-transparent before:via-slate-700/30;
+  }
 }

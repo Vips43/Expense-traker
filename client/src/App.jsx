@@ -4,6 +4,7 @@ import Layout, { ProtectedRoute } from "./pages/Layout";
 import Home from "./pages/Home";
 import Register from "./component/Register";
 import Login from "./component/Login";
+import NewExp from "./pages/NewExp";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path='/exp' element={<NewExp />} />
           </Route>
         </Route>
       </Routes>

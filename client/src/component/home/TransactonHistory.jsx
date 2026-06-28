@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useExpStore } from "../../store/expenseStore";
 import Filter from "../Filter";
+import { useExpenses, useRemoveTxn } from "../../hooks/useExpense";
+import toast from "react-hot-toast";
 
 function TransactionHistory() {
   // 1. Simplified state to just hold the string ID or null
@@ -8,23 +10,29 @@ function TransactionHistory() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
 
-  const { removeExpense, loading, getExpense } = useExpStore();
-  const expense = useExpStore((state) => state.expense);
+  // const { removeExpense, loading, getExpense } = useExpStore();
+
+  const {
+    mutateAsync: removeExpense,
+    isPending: rmPending,
+    error: rmError,
+  } = useRemoveTxn();
+  const { data: expense } = useExpenses();
 
   const allTransactions = expense?.allTransactions || [];
   const totalItems = expense?.totalItems || 0;
   const totalPages = expense?.totalPages || 1;
 
-  useEffect(() => {
-    if (getExpense) {
-      getExpense(currentPage, itemsPerPage);
+  const handleRemoveTxns = async (e, id, type) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this transaction?")) {
+      return;
     }
-  }, [currentPage, getExpense]);
-
-  const handleRemoveTxns = (e, id, type) => {
-    e.stopPropagation(); // 2. Prevents the row from toggling when clicking "Remove"
-    if (window.confirm("Are you sure you want to delete this transaction?")) {
-      removeExpense(id, type);
+    try {
+      await removeExpense({id, type});
+      toast.success("Transaction removed success");
+    } catch (error) {
+      toast.error(error?.response?.data?.msg || "Failed to remove");
     }
   };
 
@@ -45,7 +53,7 @@ function TransactionHistory() {
           </h4>
           <Filter />
         </div>
-        
+
         {/* Table Headers */}
         {totalItems > 0 && (
           <div className="grid grid-cols-12 gap-2 p-2 text-xs font-bold uppercase text-gray-500 border-b border-gray-800 shrink-0 bg-slate-950">
@@ -59,15 +67,14 @@ function TransactionHistory() {
 
         {/* Scrollable List */}
         <div className="overflow-y-auto flex-1 pr-1 current-scrollbar">
-          {loading ? (
+          {rmPending ? (
             <p className="mx-auto p-5 border-2 border-b-transparent w-10 h-10 rounded-full animate-spin mt-20"></p>
           ) : totalItems > 0 ? (
             allTransactions.map((ex, i) => {
               const isExpanded = toggleId === ex._id;
               return (
-                
-                <div 
-                  key={ex._id || i} 
+                <div
+                  key={ex._id || i}
                   className={`border-b border-slate-800 transition-colors cursor-pointer ${
                     isExpanded ? "bg-slate-900" : "hover:bg-slate-900/50"
                   }`}
@@ -94,7 +101,9 @@ function TransactionHistory() {
                     </span>
                     <span
                       className={`col-span-3 text-right font-bold ${
-                        ex.type === "expense" ? "text-red-500" : "text-emerald-500"
+                        ex.type === "expense"
+                          ? "text-red-500"
+                          : "text-emerald-500"
                       }`}
                     >
                       {ex.type === "expense" ? "-" : "+"}₹{ex.amount}
@@ -104,7 +113,7 @@ function TransactionHistory() {
                         onClick={(e) => handleRemoveTxns(e, ex._id, ex.type)}
                         className="text-xs text-gray-500 hover:text-red-500 transition-colors underline underline-offset-4"
                       >
-                        Remove
+                        {rmPending ? "Removing..." : "Remove"}
                       </button>
                     </div>
                   </div>
@@ -138,7 +147,7 @@ function TransactionHistory() {
                 Previous
               </button>
               <button
-                disabled={currentPage === totalPages || loading}
+                disabled={currentPage === totalPages || rmPending}
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
@@ -158,8 +167,8 @@ export default TransactionHistory;
 
 function GetDetails({ data }) {
   // 5. Fixed safety checks for handling date conversions safely
-  const formattedDate = data.createdAt 
-    ? new Date(data.createdAt).toISOString().split("T")[0] 
+  const formattedDate = data.createdAt
+    ? new Date(data.createdAt).toISOString().split("T")[0]
     : "N/A";
 
   const formattedTime = data.createdAt
@@ -171,24 +180,28 @@ function GetDetails({ data }) {
     : "N/A";
 
   return (
-    <div 
+    <div
       className="bg-slate-900/80 px-4 pb-4 pt-1 border-t border-slate-800/50 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-slate-400 cursor-default"
       onClick={(e) => e.stopPropagation()} // Prevents closing details row when clicking inside it
     >
       <p className="flex items-center gap-1">
-        <strong className="text-slate-500">Category:</strong> 
-        <span className="capitalize text-slate-300">{data.category || "Other"}</span>
+        <strong className="text-slate-500">Category:</strong>
+        <span className="capitalize text-slate-300">
+          {data.category || "Other"}
+        </span>
       </p>
       <p className="flex items-center gap-1">
-        <strong className="text-slate-500">Mode:</strong> 
-        <span className="capitalize text-slate-300">{data.paymentMethod || data.mode || "Online"}</span>
+        <strong className="text-slate-500">Mode:</strong>
+        <span className="capitalize text-slate-300">
+          {data.paymentMethod || data.mode || "Online"}
+        </span>
       </p>
       <p className="flex items-center gap-1">
-        <strong className="text-slate-500">Date:</strong> 
+        <strong className="text-slate-500">Date:</strong>
         <span className="text-slate-300">{formattedDate}</span>
       </p>
       <p className="flex items-center gap-1">
-        <strong className="text-slate-500">Time:</strong> 
+        <strong className="text-slate-500">Time:</strong>
         <span className="text-slate-300">{formattedTime}</span>
       </p>
     </div>

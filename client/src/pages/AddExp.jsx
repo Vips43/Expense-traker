@@ -1,14 +1,18 @@
 import { useId } from "react";
 import { HiArrowLeft } from "react-icons/hi";
-import { useExpStore } from "../store/expenseStore";
 import { useMyStore } from "../store/store";
 import toast from "react-hot-toast";
+import { useAddEarning, useAddExpense } from "../hooks/useExpense";
 
 function AddExp({ label }) {
   const id = useId();
-
-  const { setExpense, addEarning, loading, err, success } = useExpStore();
   const { setToggle } = useMyStore();
+
+  const { mutateAsync: setExpense, isPending: expMutPending } = useAddExpense();
+
+  const { mutateAsync: addEarning, isPending: earMutPending } = useAddEarning();
+
+  const isLoading = label === "expense" ? expMutPending : earMutPending;
   const typeArr = ["Food", "Bills", "Entertainment", "Transport", "Other"];
 
   const handleSubmit = async (e) => {
@@ -16,7 +20,11 @@ function AddExp({ label }) {
     const formData = new FormData(e.target);
     const expData = Object.fromEntries(formData);
 
+    if (expData.amount) expData.amount = Number(expData.amount);
+
     try {
+      expData.type = label; // let know backend whichexp type
+
       if (label === "expense") {
         await setExpense(expData);
       } else if (label === "earning") {
@@ -28,11 +36,13 @@ function AddExp({ label }) {
       toast.success("Sucessfully added");
       setToggle(label);
     } catch (error) {
-      toast.error(err || error.msg || "Server error");
+      const errMsg =
+        error?.response?.data?.msg || error.message || "Server error";
+      toast.error(errMsg);
       setToggle(label);
     }
   };
-  err && console.log(err);
+  console.log(label);
   return (
     <section className="fixed inset-0 w-full h-dvh grid bg-black/70 place-items-center z-50">
       <form
@@ -135,13 +145,9 @@ function AddExp({ label }) {
         <button
           type="submit"
           className="mt-2 flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
-          disabled={loading}
+          disabled={isLoading}
         >
-          {loading
-            ? `Adding ${label}...`
-            : success
-              ? "Expense Added"
-              : `Add ${label}`}
+          {isLoading ? `Adding ${label}...` : `Add ${label}`}
         </button>
       </form>
     </section>
