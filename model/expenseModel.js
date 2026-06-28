@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import MongooseDelete from "mongoose-delete";
 // import MongooseDelete from "mongoose-delete";
 
 const expenseSchema = new mongoose.Schema(
@@ -34,11 +35,14 @@ const expenseSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// expenseSchema.plugin(MongooseDelete, {
-//   deletedBy: true,
-//   deletedByType: String,
-//   overrideMethods: "all",
-// });
+expenseSchema.index({ user: 1, type: 1, category: 1 });
+expenseSchema.index({ user: 1, createdAt: -1 });
+
+expenseSchema.plugin(MongooseDelete, {
+  deletedBy: true,
+  deletedByType: String,
+  overrideMethods: "all",
+});
 
 const Expense = mongoose.model("Expense", expenseSchema);
 export default Expense;

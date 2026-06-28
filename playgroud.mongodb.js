@@ -4,7 +4,12 @@
 // The current database to use.
 use("expense");
 
-db.expenses.createIndex({ name: 1 });
-db.expenses.find({ name: "bus ticket" }).explain("executionStats")
-
-// db.expenses.countDocuments({})
+// db.expenses.updateMany(
+//   { deleted: { $exists: false } },
+//   { $set: { deleted: false } },
+// );
+// db.earnings.updateMany(
+//   { deleted: { $exists: false } },
+//   { $set: { deleted: false } },
+// );
+db.expenses.find({})

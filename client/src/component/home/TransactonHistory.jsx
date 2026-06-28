@@ -11,7 +11,7 @@ function TransactionHistory() {
   const { mutateAsync: removeExpense, isPending: rmPending } = useRemoveTxn();
 
   // FIX: Pass pagination state to the hook
-  const { data: expense, isLoading } = useExpenses(currentPage, itemsPerPage);
+  const { data: expense, isPending } = useExpenses(currentPage, itemsPerPage);
 
   const allTransactions = expense?.allTransactions || [];
   const totalItems = expense?.totalItems || 0;
@@ -57,7 +57,7 @@ function TransactionHistory() {
         )}
 
         <div className="overflow-y-auto flex-1 pr-1 current-scrollbar">
-          {isLoading ? (
+          {isPending ? (
             <p className="mx-auto p-5 border-2 border-b-transparent w-10 h-10 rounded-full animate-spin mt-20"></p>
           ) : totalItems > 0 ? (
             allTransactions.map((ex, i) => {
@@ -112,7 +112,7 @@ function TransactionHistory() {
           )}
         </div>
 
-        {totalItems > 0 && totalPages > 1 && (
+    
           <div className="flex items-center justify-between p-4 border-t border-slate-800 bg-slate-950/50 text-sm shrink-0">
             <span className="text-gray-400">
               Showing page{" "}
@@ -138,7 +138,7 @@ function TransactionHistory() {
               </button>
             </div>
           </div>
-        )}
+        
       </div>
     </section>
   );

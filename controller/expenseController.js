@@ -29,6 +29,7 @@ export const addExpense = async (req, res) => {
 
 export const getExpense = async (req, res) => {
   try {
+    if (!req.user) res.status(401).json({ msg: "user not found" });
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 15;
     const skip = (page - 1) * limit;
@@ -94,11 +95,16 @@ export const removeTxn = async (req, res) => {
     return res.status(400).json({ msg: "select valid trasaction" });
   try {
     let txn;
-    if (type === "expense") txn = await Expense.findByIdAndDelete(id);
-    else if (type === "earning") txn = await Earning.findByIdAndDelete(id);
+    const userId = req.user._id;
+
+    if (type === "expense") txn = await Expense.findById(id);
+    else if (type === "earning") txn = await Earning.findById(id);
     else return res.status(400).json({ msg: "Invalid transaction type" });
 
-    if (!txn) return res.status(404).json({ msg: "Transaction not found" });
+    if (!txn)
+      return res.status(404).json({ msg: "Transaction not found" });
+
+    await txn.delete(userId);
 
     res.status(200).json({ msg: "Transaction deleted", txn });
   } catch (error) {
