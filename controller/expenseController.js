@@ -135,8 +135,7 @@ export const getAllData = async (req, res) => {
 export const chartData = async (req, res) => {
   try {
     const userId = req.user._id;
-
-    console.log(userId);
+    if (!userId) res.status(401).json({ msg: "User not authenticated" });
     // 1. Monthly Summary (Grouped by Year, Month, and Transaction Type)
     const monthlyData = await Expense.aggregate([
       { $match: { user: userId } },

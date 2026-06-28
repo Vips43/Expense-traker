@@ -22,12 +22,9 @@ function Analytics() {
   const token = user?.token;
   const setToggle = useMyStore((state) => state.setToggle);
   const toggle = useMyStore((state) => state.toggle);
-  // const { chartData, charts } = useExpStore();
 
   const { data: charts } = useChartData();
-  // useEffect(() => {
-  //   chartData();
-  // }, []);
+
   const categories = charts?.data?.categories || [];
   const labels = categories.map((c) => c._id ?? []);
   const values = categories.map((c) => c.totalSpent ?? []);

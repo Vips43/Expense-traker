@@ -1,23 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useExpStore } from "../../store/expenseStore";
+import React, { useState } from "react";
 import Filter from "../Filter";
 import { useExpenses, useRemoveTxn } from "../../hooks/useExpense";
 import toast from "react-hot-toast";
 
 function TransactionHistory() {
-  // 1. Simplified state to just hold the string ID or null
   const [toggleId, setToggleId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
 
-  // const { removeExpense, loading, getExpense } = useExpStore();
+  const { mutateAsync: removeExpense, isPending: rmPending } = useRemoveTxn();
 
-  const {
-    mutateAsync: removeExpense,
-    isPending: rmPending,
-    error: rmError,
-  } = useRemoveTxn();
-  const { data: expense } = useExpenses();
+  // FIX: Pass pagination state to the hook
+  const { data: expense, isLoading } = useExpenses(currentPage, itemsPerPage);
 
   const allTransactions = expense?.allTransactions || [];
   const totalItems = expense?.totalItems || 0;
@@ -29,14 +23,13 @@ function TransactionHistory() {
       return;
     }
     try {
-      await removeExpense({id, type});
-      toast.success("Transaction removed success");
+      await removeExpense({ id, type });
+      toast.success("Transaction removed successfully");
     } catch (error) {
       toast.error(error?.response?.data?.msg || "Failed to remove");
     }
   };
 
-  // 3. Toggles row open, or closes it if clicked again
   const handleRowClick = (id) => {
     setToggleId((prevId) => (prevId === id ? null : id));
   };
@@ -46,7 +39,6 @@ function TransactionHistory() {
   return (
     <section className="flex flex-col h-full overflow-hidden">
       <div className="flex flex-col flex-1 min-h-0 mt-4 overflow-hidden">
-        {/* Header & Filter */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-2 shrink-0">
           <h4 className="text-xl text-mist-300 font-semibold">
             Transaction History
@@ -54,7 +46,6 @@ function TransactionHistory() {
           <Filter />
         </div>
 
-        {/* Table Headers */}
         {totalItems > 0 && (
           <div className="grid grid-cols-12 gap-2 p-2 text-xs font-bold uppercase text-gray-500 border-b border-gray-800 shrink-0 bg-slate-950">
             <span className="col-span-1">#</span>
@@ -65,13 +56,15 @@ function TransactionHistory() {
           </div>
         )}
 
-        {/* Scrollable List */}
         <div className="overflow-y-auto flex-1 pr-1 current-scrollbar">
-          {rmPending ? (
+          {isLoading ? (
             <p className="mx-auto p-5 border-2 border-b-transparent w-10 h-10 rounded-full animate-spin mt-20"></p>
           ) : totalItems > 0 ? (
             allTransactions.map((ex, i) => {
+              // FIX: Define isExpanded so the component can access it
               const isExpanded = toggleId === ex._id;
+              const isRemoving = rmPending && toggleId === ex._id;
+
               return (
                 <div
                   key={ex._id || i}
@@ -80,7 +73,6 @@ function TransactionHistory() {
                   }`}
                   onClick={() => handleRowClick(ex._id)}
                 >
-                  {/* The actual row grid values */}
                   <div className="grid grid-cols-12 gap-2 items-center p-3">
                     <span className="col-span-1 text-gray-500 text-sm">
                       {getRowIndex(i)}
@@ -90,21 +82,13 @@ function TransactionHistory() {
                     </span>
                     <span className="col-span-2">
                       <span
-                        className={`text-[10px] px-2 pb-0.5 rounded-full border ${
-                          ex.type === "expense"
-                            ? "text-red-400 border-red-900 bg-red-900/20"
-                            : "text-emerald-400 border-emerald-900 bg-emerald-900/20"
-                        }`}
+                        className={`text-[10px] px-2 pb-0.5 rounded-full border ${ex.type === "expense" ? "text-red-400 border-red-900 bg-red-900/20" : "text-emerald-400 border-emerald-900 bg-emerald-900/20"}`}
                       >
                         {ex.type}
                       </span>
                     </span>
                     <span
-                      className={`col-span-3 text-right font-bold ${
-                        ex.type === "expense"
-                          ? "text-red-500"
-                          : "text-emerald-500"
-                      }`}
+                      className={`col-span-3 text-right font-bold ${ex.type === "expense" ? "text-red-500" : "text-emerald-500"}`}
                     >
                       {ex.type === "expense" ? "-" : "+"}₹{ex.amount}
                     </span>
@@ -113,12 +97,10 @@ function TransactionHistory() {
                         onClick={(e) => handleRemoveTxns(e, ex._id, ex.type)}
                         className="text-xs text-gray-500 hover:text-red-500 transition-colors underline underline-offset-4"
                       >
-                        {rmPending ? "Removing..." : "Remove"}
+                        {isRemoving ? "Removing..." : "Remove"}
                       </button>
                     </div>
                   </div>
-
-                  {/* Details block rendered safely underneath the layout row */}
                   {isExpanded && <GetDetails data={ex} />}
                 </div>
               );
@@ -130,7 +112,6 @@ function TransactionHistory() {
           )}
         </div>
 
-        {/* Pagination Controls */}
         {totalItems > 0 && totalPages > 1 && (
           <div className="flex items-center justify-between p-4 border-t border-slate-800 bg-slate-950/50 text-sm shrink-0">
             <span className="text-gray-400">
@@ -140,9 +121,9 @@ function TransactionHistory() {
             </span>
             <div className="inline-flex gap-2">
               <button
-                disabled={currentPage === 1 || loading}
+                disabled={currentPage === 1 || rmPending}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-slate-900 transition-all text-xs font-semibold"
+                className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 transition-all text-xs font-semibold"
               >
                 Previous
               </button>
@@ -151,7 +132,7 @@ function TransactionHistory() {
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
-                className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-slate-900 transition-all text-xs font-semibold"
+                className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 transition-all text-xs font-semibold"
               >
                 Next
               </button>
@@ -165,12 +146,11 @@ function TransactionHistory() {
 
 export default TransactionHistory;
 
+// Helper sub-component remains unchanged
 function GetDetails({ data }) {
-  // 5. Fixed safety checks for handling date conversions safely
   const formattedDate = data.createdAt
     ? new Date(data.createdAt).toISOString().split("T")[0]
     : "N/A";
-
   const formattedTime = data.createdAt
     ? new Date(data.createdAt).toLocaleString("en-IN", {
         hour: "2-digit",
@@ -182,7 +162,7 @@ function GetDetails({ data }) {
   return (
     <div
       className="bg-slate-900/80 px-4 pb-4 pt-1 border-t border-slate-800/50 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-slate-400 cursor-default"
-      onClick={(e) => e.stopPropagation()} // Prevents closing details row when clicking inside it
+      onClick={(e) => e.stopPropagation()}
     >
       <p className="flex items-center gap-1">
         <strong className="text-slate-500">Category:</strong>
