@@ -1,6 +1,34 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../store/api/axiosInstance";
-import { queryClient } from "../main.jsx";
+import { queryClient } from "../queryClient";
+
+export function useAddExpense() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (expenseData) => {
+      const res = await api.post("/expense", expenseData);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expense"] });
+    },
+  });
+}
+
+export function useAddEarning() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (earningData) => {
+      const res = await api.post("/earning", earningData);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expense"] });
+    },
+  });
+}
 
 export function useExpenses(currentPage = 1, limit = 15) {
   return useQuery({
@@ -13,8 +41,17 @@ export function useExpenses(currentPage = 1, limit = 15) {
   });
 }
 
-export function useRemoveTxn() {
+export function useTotals() {
+  return useQuery({
+    queryKey: ["expense"],
+    queryFn: async () => {
+      const res = await api.get("/totalExp");
+      return res.data;
+    },
+  });
+}
 
+export function useRemoveTxn() {
   return useMutation({
     mutationFn: async ({ id, type }) => {
       const res = await api.delete(`txn/${id}?type=${type}`);
@@ -53,40 +90,15 @@ export function useChartData() {
   });
 }
 
-export function useTotals() {
+export function useGenerateReports() {
   return useQuery({
-    queryKey: ["expense"],
+    queryKey: ["expense", "report"],
     queryFn: async () => {
-      const res = await api.get("/totalExp");
-      return res.data;
-    },
-  });
-}
+      const { data } = await api.get("/reports");
+      const expense = data.filter((d) => d.type === "expense");
+      const earning = data.filter((d) => d.type === "earning");
 
-export function useAddEarning() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (earningData) => {
-      const res = await api.post("/earning", earningData);
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expense"] });
-    },
-  });
-}
-
-export function useAddExpense() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (expenseData) => {
-      const res = await api.post("/expense", expenseData);
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expense"] });
+      return { expense, earning };
     },
   });
 }
