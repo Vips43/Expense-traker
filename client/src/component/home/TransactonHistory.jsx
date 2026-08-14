@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Filter from "../Filter";
 import { useExpenses, useRemoveTxn } from "../../hooks/useExpense";
 import toast from "react-hot-toast";
@@ -6,13 +6,15 @@ import toast from "react-hot-toast";
 function TransactionHistory() {
   const [toggleId, setToggleId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const [count, setCount] = useState(10);
+  const [value, setValue] = useState("all");
+  const itemsPerPage = 5;
 
   const { mutateAsync: removeExpense, isPending: rmPending } = useRemoveTxn();
 
   // FIX: Pass pagination state to the hook
-  const { data: expense, isPending } = useExpenses(currentPage, itemsPerPage);
-
+  const { data: expense, isPending } = useExpenses(currentPage, count, value);
+  console.log(value, expense);
   const allTransactions = expense?.allTransactions || [];
   const totalItems = expense?.totalItems || 0;
   const totalPages = expense?.totalPages || 1;
@@ -43,7 +45,11 @@ function TransactionHistory() {
           <h4 className="text-xl text-mist-300 font-semibold">
             Transaction History
           </h4>
-          <Filter />
+          <Filter
+            setValue={setValue}
+            setCurrentPage={setCurrentPage}
+            value={value}
+          />
         </div>
 
         {totalItems > 0 && (
@@ -112,33 +118,54 @@ function TransactionHistory() {
           )}
         </div>
 
-    
-          <div className="flex items-center justify-between p-4 border-t border-slate-800 bg-slate-950/50 text-sm shrink-0">
-            <span className="text-gray-400">
-              Showing page{" "}
-              <strong className="text-slate-200">{currentPage}</strong> of{" "}
-              <strong className="text-slate-200">{totalPages}</strong>
-            </span>
-            <div className="inline-flex gap-2">
-              <button
-                disabled={currentPage === 1 || rmPending}
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 transition-all text-xs font-semibold"
-              >
-                Previous
-              </button>
-              <button
-                disabled={currentPage === totalPages || rmPending}
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 transition-all text-xs font-semibold"
-              >
-                Next
-              </button>
-            </div>
+        <div className="flex items-center justify-between p-4 border-t border-slate-800 bg-slate-950/50 text-sm shrink-0">
+          <div className="w-fit">
+            <label htmlFor="">Show Count</label>
+            <select
+              name="showCount"
+              id="showCount"
+              className="outline ml-2 bg-transparent text-white border border-slate-700 rounded px-1.5 py-0.5 cursor-pointer"
+              value={count}
+              onChange={(e) => setCount(Number(e.target.value))}
+            >
+              <option value={5} className="bg-slate-900 text-white">
+                5
+              </option>
+              <option value={10} className="bg-slate-900 text-white">
+                10
+              </option>
+              <option value={15} className="bg-slate-900 text-white">
+                15
+              </option>
+              <option value={20} className="bg-slate-900 text-white">
+                20
+              </option>
+            </select>
           </div>
-        
+          <span className="text-gray-400">
+            Showing page{" "}
+            <strong className="text-slate-200">{currentPage}</strong> of{" "}
+            <strong className="text-slate-200">{totalPages}</strong>
+          </span>
+          <div className="inline-flex gap-2">
+            <button
+              disabled={currentPage === 1 || rmPending}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 transition-all text-xs font-semibold"
+            >
+              Previous
+            </button>
+            <button
+              disabled={currentPage === totalPages || rmPending}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 transition-all text-xs font-semibold"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

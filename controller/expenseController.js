@@ -30,19 +30,49 @@ export const addExpense = async (req, res) => {
 export const getExpense = async (req, res) => {
   try {
     if (!req.user) res.status(401).json({ msg: "user not found" });
+    const value = req.params.value;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 15;
     const skip = (page - 1) * limit;
 
+    const checkVal = (val) => {
+      if (!val || val.toLowerCase() === "all") return {};
+
+      const lowerVal = val.toLowerCase();
+      const modes = ["online", "offline"];
+      const categories = [
+        "Food",
+        "Bills",
+        "Entertainment",
+        "Transport",
+        "Other",
+      ];
+
+      if (modes.includes(lowerVal)) {
+        return { mode: lowerVal };
+      }
+
+      const matchedCategory = categories.find(
+        (cat) => cat.toLowerCase() === lowerVal,
+      );
+
+      if (matchedCategory) {
+        return { category: matchedCategory };
+      }
+
+      return {};
+    };
+    const checkedValue = checkVal(value);
+    console.log(checkedValue, value);
     const [expenses, earnings, expenseCount, earningcount] = await Promise.all([
-      Expense.find({ user: req.user._id })
+      Expense.find({ user: req.user._id, ...checkedValue })
         .sort({ createdAt: -1 })
         .limit(skip + limit),
-      Earning.find({ user: req.user._id })
+      Earning.find({ user: req.user._id, ...checkedValue })
         .sort({ createdAt: -1 })
         .limit(skip + limit),
-      Expense.countDocuments({ user: req.user._id }),
-      Earning.countDocuments({ user: req.user._id }),
+      Expense.countDocuments({ user: req.user._id, ...checkedValue }),
+      Earning.countDocuments({ user: req.user._id, ...checkedValue }),
     ]);
     if (expenses.length === 0 && earnings === 0)
       return res.status(200).json({ msg: "no expense or earning found" });
@@ -101,8 +131,7 @@ export const removeTxn = async (req, res) => {
     else if (type === "earning") txn = await Earning.findById(id);
     else return res.status(400).json({ msg: "Invalid transaction type" });
 
-    if (!txn)
-      return res.status(404).json({ msg: "Transaction not found" });
+    if (!txn) return res.status(404).json({ msg: "Transaction not found" });
 
     await txn.delete(userId);
 
@@ -115,19 +144,18 @@ export const removeTxn = async (req, res) => {
 
 export const getAllData = async (req, res) => {
   try {
-    // 1. If req.user._id is a user ID, use find() with a query object
+    // 1 If req.user._id is a user ID, use find() with a query object
+
     const expense = await Expense.find({ user: req.user._id });
     const earning = await Earning.find({ user: req.user._id });
 
     const onlineData = expense.filter((e) => e.mode === "online");
     const offlineData = expense.filter((e) => e.mode === "offline");
 
-    const allData = [
-      {
-        onlineData: onlineData,
-        offlineData: offlineData,
-      },
-    ];
+    const allData = {
+      onlineData: onlineData,
+      offlineData: offlineData,
+    };
 
     res.status(200).json(allData);
   } catch (error) {

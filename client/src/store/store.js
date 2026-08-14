@@ -13,7 +13,6 @@ export const useMyStore = create((set, get) => ({
   },
 
   setAlert: (msg) => set({ alert: msg }),
-  
   getReports: async () => {
     const token = useAuthStore.getState().user?.token;
     try {

@@ -1,15 +1,11 @@
-import { useExpStore } from "../store/expenseStore";
-
 const options = ["Food", "Bills", "Entertainment", "Transport", "Other"];
 
-function Filter() {
-  const filterExpense = useExpStore((state) => state.filterExpense);
-
+function Filter({ setValue, value, setCurrentPage }) {
   const handleChange = async (e) => {
     const val = e.target.value;
     if (val === "NA") return;
-    await filterExpense(val);
-    
+    setValue(val);
+    setCurrentPage(1);
   };
 
   return (
@@ -19,7 +15,7 @@ function Filter() {
           type="radio"
           name="mode"
           value="all"
-          defaultChecked
+          checked={value === "all"}
           id="all"
           onChange={handleChange}
         />
@@ -28,6 +24,7 @@ function Filter() {
           type="radio"
           name="mode"
           id="offline"
+          checked={value === "offline"}
           value="offline"
           onChange={handleChange}
         />
@@ -36,6 +33,7 @@ function Filter() {
           type="radio"
           name="mode"
           id="online"
+          checked={value === "online"}
           value="online"
           onChange={handleChange}
         />

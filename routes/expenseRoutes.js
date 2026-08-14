@@ -14,9 +14,9 @@ const router = e.Router();
 
 router.post("/expense", protect, addExpense);
 router.post("/earning", protect, addEarning);
-router.get("/expense", protect, getExpense);
+router.get("/expense/:value", protect, getExpense);
 router.get("/totalExp", protect, getTotalExp);
-router.post("/filter/:query", protect, filterTxns);
+router.get("/filter/:query", protect, filterTxns);
 router.get("/allData", protect, getAllData);
 
 router.get("/chartData", protect, chartData);
