@@ -16,10 +16,11 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path='/exp' element={<NewExp />} />
+            <Route path="/exp" element={<NewExp />} />
           </Route>
         </Route>
       </Routes>
+
     </>
   );
 }

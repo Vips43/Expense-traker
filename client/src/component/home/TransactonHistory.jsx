@@ -14,7 +14,7 @@ function TransactionHistory() {
 
   // FIX: Pass pagination state to the hook
   const { data: expense, isPending } = useExpenses(currentPage, count, value);
-  console.log(value, expense);
+  
   const allTransactions = expense?.allTransactions || [];
   const totalItems = expense?.totalItems || 0;
   const totalPages = expense?.totalPages || 1;
