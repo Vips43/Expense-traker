@@ -35,6 +35,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api", expenseRoutes);
 app.use("/api", reportRoutes);
 
+app.get("/api/ping", (req, res) => {
+  res.send("ping test succeed");
+});
 const backfillTimestamps = async () => {
   try {
     const users = await User.find({}).lean();
