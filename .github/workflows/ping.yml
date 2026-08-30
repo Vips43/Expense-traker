@@ -1,0 +1,47 @@
+name: Vercel Ping
+
+on:
+  schedule:
+    # Runs at the top of every hour (e.g., 1:00, 2:00, 3:00)
+    - cron: "0 * * * *"
+  workflow_dispatch: # Allows you to trigger it manually anytime
+
+jobs:
+  check-uptime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Endpoint with Automatic Retries
+        run: |
+          URL="https://vercel.app"
+          MAX_ATTEMPTS=5
+          ATTEMPT=1
+          SUCCESS=false
+
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS..."
+            STATUS_CODE=$(curl -s -D headers.txt -o body.txt -w "%{http_code}" --max-time 20 "$URL")
+            
+            if [ "$STATUS_CODE" == "200" ]; then
+              SUCCESS=true
+              break
+            fi
+
+            echo "Attempt $ATTEMPT failed with status code $STATUS_CODE. Retrying in 60 seconds..."
+            sleep 60
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+          if [ "$SUCCESS" = true ]; then
+            echo "### :white_check_mark: Vercel Status: OK" >> $GITHUB_STEP_SUMMARY
+            echo "Endpoint returned 200 OK at $(date -u) (UTC)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "::error::Endpoint failed after $MAX_ATTEMPTS attempts. Last status code: $STATUS_CODE"
+            echo "### :x: Vercel Alert: Request Failed After $MAX_ATTEMPTS Attempts" >> $GITHUB_STEP_SUMMARY
+            echo "**Timestamp:** $(date -u) (UTC)" >> $GITHUB_STEP_SUMMARY
+            echo "**Last Status Code:** \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
+            echo "#### Last Response Headers:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`text" >> $GITHUB_STEP_SUMMARY
+            cat headers.txt >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
