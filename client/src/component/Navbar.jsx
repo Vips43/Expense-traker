@@ -9,7 +9,7 @@ import { useEffect } from "react";
 function Navbar() {
   const navigate = useNavigate();
   const { logout } = useAuthStore();
-  const user = useAuthStore((state) => state.user);
+  const { user } = useAuthStore((state) => state.user);
   const setToggle = useMyStore((state) => state.setToggle);
   const toggle = useMyStore((state) => state.toggle);
 
@@ -21,7 +21,7 @@ function Navbar() {
 
   return (
     <aside
-      className={`absolute inset-0 z-50 bg-slate-950/40 backdrop-blur-sm transition-opacity duration-300 ${
+      className={`absolute inset-0 z-50 bg-white/10 backdrop-blur-xs transition-opacity duration-300 ${
         !toggle.navbar ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       onClick={() => setToggle("navbar")}
@@ -38,13 +38,15 @@ function Navbar() {
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Navigation
             </span>
-            <button
+            <Button
               type="button"
-              className="p-2 text-xl text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+              size="sm"
+              outline
+              className="p-2 text-xl text-slate-400 focus:ring-0  transition-colors cursor-pointer"
               onClick={() => setToggle("navbar")}
             >
               <AiOutlineMenuFold />
-            </button>
+            </Button>
           </li>
 
           {/* User Section Selector */}
@@ -73,19 +75,21 @@ function Navbar() {
                   Account Info
                 </span>
                 <p className="text-xs text-slate-400">
-                  Member since: {" "}
+                  Member since:{" "}
                   <span className="font-medium text-slate-300">
                     {me?.date || "recently"}
                   </span>
                 </p>
               </div>
 
-              <button
+              <Button
                 type="button"
-                className="w-full py-2 px-3 text-xs font-medium text-red-400 hover:text-white bg-red-950/20 hover:bg-red-600 border border-red-900/30 hover:border-red-600 rounded-lg transition-all duration-200 cursor-pointer text-center"
+                size="xs"
+                outline
+                color='red'
               >
                 Delete Account
-              </button>
+              </Button>
             </li>
           )}
         </ul>

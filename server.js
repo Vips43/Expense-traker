@@ -1,12 +1,15 @@
 import express from "express";
 import morgan from "morgan";
+import dotenv from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+
 import authRoutes from "./routes/authRoutes.js";
 import connectDB from "./config/conn.js";
-import dotenv from "dotenv";
 import expenseRoutes from "./routes/expenseRoutes.js";
-import cors from "cors";
 import User from "./model/userModel.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import { protect } from "./middleware/authMiddleware.js";
 
 dotenv.config();
 const PORT = 3000;
@@ -29,11 +32,12 @@ connectDB(mongo_url);
 
 app.use(express.json());
 app.use(morgan("dev"));
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 app.use("/api/auth", authRoutes);
-app.use("/api", expenseRoutes);
-app.use("/api", reportRoutes);
+app.use("/api", protect, expenseRoutes);
+app.use("/api", protect, reportRoutes);
 
 app.get("/ping", (req, res) => {
   res.send("ping test succeed");

@@ -28,7 +28,6 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(email, password);
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: "user not found!" });
@@ -45,7 +44,12 @@ export const loginUser = async (req, res) => {
         expiresIn: process.env.JWT_EXPIRY,
       },
     );
-
+    res.cookie("exp-token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     res.status(200).json({
       msg: "Login successfull",
       token,
@@ -64,7 +68,9 @@ export const loginUser = async (req, res) => {
 export const getUser = async (req, res) => {
   const { id } = req.query;
   try {
-    const user = await User.findById(id || req.user._id).select("-password").lean();
+    const user = await User.findById(id || req.user.id)
+      .select("-password")
+      .lean();
     if (!user) return res.status(400).json({ msg: "User not found!" });
 
     const signUpDate = dayjs(user.createdAt).fromNow();

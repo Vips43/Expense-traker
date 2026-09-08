@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const BASE_URL = `/api`;
-const loggedUser = JSON.parse(localStorage.getItem("user"));
+const loggedUser = JSON.parse(localStorage.getItem("exp-user"));
 
 export const useAuthStore = create((set, get) => ({
   user: loggedUser || null,
@@ -51,27 +51,28 @@ export const useAuthStore = create((set, get) => ({
       set({ loading: false, err: "Server error" });
     }
   },
-  
+
   getUser: async () => {
-    const token = get().user?.token;
-    if (!token) return console.error("No token found");
     try {
       set({ loading: true });
       const user = await fetch(`/api/auth/user`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
       });
+      if (!user.ok) throw new Error("getting user error");
       const data = await user.json();
       set({ me: data, loading: false });
     } catch (error) {
       set({ loading: false, msg: "Server error" });
     }
   },
+
   logout: () => {
     localStorage.removeItem("user");
     set({ user: null, isAuthenticated: false });
+  },
+
+  setUser: (val) => {
+    set({ user: val });
   },
 }));

@@ -1,5 +1,15 @@
 import { useId } from "react";
-import { HiArrowLeft } from "react-icons/hi";
+import {
+  Drawer,
+  Button,
+  Label,
+  TextInput,
+  Select,
+  Radio,
+  Spinner,
+  DrawerHeader,
+  DrawerItems,
+} from "flowbite-react";
 import { useMyStore } from "../store/store";
 import toast from "react-hot-toast";
 import { useAddEarning, useAddExpense } from "../hooks/useExpense";
@@ -9,11 +19,12 @@ function AddExp({ label }) {
   const { setToggle } = useMyStore();
 
   const { mutateAsync: setExpense, isPending: expMutPending } = useAddExpense();
-
   const { mutateAsync: addEarning, isPending: earMutPending } = useAddEarning();
 
   const isLoading = label === "expense" ? expMutPending : earMutPending;
-  const typeArr = ["Food", "Bills", "Entertainment", "Transport", "Other"];
+  const categories = ["Food", "Bills", "Entertainment", "Transport", "Other"];
+
+  const handleClose = () => setToggle(label);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +34,7 @@ function AddExp({ label }) {
     if (expData.amount) expData.amount = Number(expData.amount);
 
     try {
-      expData.type = label; // let know backend whichexp type
+      expData.type = label;
 
       if (label === "expense") {
         await setExpense(expData);
@@ -32,125 +43,205 @@ function AddExp({ label }) {
       } else {
         throw new Error("Invalid transaction type");
       }
+
       e.target.reset();
-      toast.success("Sucessfully added");
-      setToggle(label);
+      toast.success("Successfully added");
+      handleClose();
     } catch (error) {
       const errMsg =
         error?.response?.data?.msg || error.message || "Server error";
       toast.error(errMsg);
-      setToggle(label);
+      handleClose();
     }
   };
-  console.log(label);
+
   return (
-    <section className="fixed inset-0 w-full h-dvh grid bg-black/70 place-items-center z-50">
-      <form
-        className="flex flex-col max-w-md w-full gap-3 p-5 rounded-3xl mx-auto bg-slate-900 text-slate-100 shadow-2xl border border-slate-700"
-        onSubmit={handleSubmit}
-      >
-        <div className="flex items-center justify-between border-b border-slate-700 pb-2">
-          <button
-            type="button"
-            className="text-slate-400 hover:text-white cursor-pointer transition-colors"
-            onClick={() => setToggle(label)}
-          >
-            <HiArrowLeft size={24} />
-          </button>
-          <h2 className="text-xl font-semibold">Add {label}</h2>
-          <div className="w-6" /> {/* Spacer */}
-        </div>
+    <Drawer
+      open={true}
+      onClose={handleClose}
+      position="bottom"
+      className="bg-gray-900 border-t border-gray-800 p-4 rounded-t-2xl max-w-lg mx-auto shadow-2xl max-h-[90dvh] overflow-y-auto transition-all duration-1000"
+    >
+      {/* Pull handle bar indicator */}
+      <div className="mx-auto w-12 h-1.5 bg-gray-700 rounded-full mb-3 cursor-pointer" />
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2">
-            <label htmlFor={id + "-name"} className={"form-label"}>
-              Expense Name
-            </label>
-            <input
-              type="text"
-              id={id + "-name"}
-              name="name"
-              className={"form-input"}
-              placeholder="e.g. Grocery Shopping"
-            />
-          </div>
+      <DrawerHeader
+        title={`Add ${label.charAt(0).toUpperCase() + label.slice(1)}`}
+        titleIcon={() => null}
+        className="text-white text-base font-semibold border-b border-gray-800 pb-2 mb-4"
+      />
 
-          {label === "expense" && (
-            <div>
-              <label htmlFor={id + "-cat"} className={"form-label"}>
-                Category
-              </label>
-              <select name="category" id={id + "-cat"} className={"form-input"}>
-                {typeArr.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-          {label === "earning" && (
-            <div>
-              <label htmlFor={id + "-cat"} className="form-label">
-                Category
-              </label>
-              <input
-                type="text"
-                name="category"
-                id={id + "-cat"}
-                className="form-input"
-              />
-            </div>
-          )}
-
+      <DrawerItems>
+        <form onSubmit={handleSubmit} className="space-y-4 text-left">
+          {/* Name Field */}
           <div>
-            <label htmlFor={id + "-amt"} className={"form-label"}>
-              Amount
-            </label>
-            <input
-              type="number"
-              id={id + "-amt"}
-              name="amount"
-              className={"form-input"}
-              placeholder="0.00"
+            <div className="mb-1.5 block">
+              <Label
+                htmlFor={`${id}-name`}
+                value={`${label === "expense" ? "Expense" : "Income"} Name`}
+                className="text-gray-300 text-xs font-medium"
+              />
+            </div>
+            <TextInput
+              id={`${id}-name`}
+              name="name"
+              placeholder="e.g. Grocery Shopping"
+              required
+              color="gray"
+              theme={{
+                field: {
+                  input: {
+                    colors: {
+                      gray: "bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500 text-sm",
+                    },
+                  },
+                },
+              }}
             />
           </div>
-          <div className="flex items-center gap-4 text-sm text-gray-400 font-semibold">
-            <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                name="mode"
-                id={id + "-online"}
-                value="online"
-              />
-              <label htmlFor={id + "-online"} className="cursor-pointer">
-                Online
-              </label>
+
+          {/* Category & Amount Row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <div className="mb-1.5 block">
+                <Label
+                  htmlFor={`${id}-cat`}
+                  value="Category"
+                  className="text-gray-300 text-xs font-medium"
+                />
+              </div>
+              {label === "expense" ? (
+                <Select
+                  id={`${id}-cat`}
+                  name="category"
+                  required
+                  theme={{
+                    field: {
+                      select: {
+                        colors: {
+                          gray: "bg-gray-800 border-gray-700 text-white focus:border-cyan-500 focus:ring-cyan-500 text-sm",
+                        },
+                      },
+                    },
+                  }}
+                >
+                  {categories.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </Select>
+              ) : (
+                <TextInput
+                  id={`${id}-cat`}
+                  name="category"
+                  placeholder="e.g. Salary"
+                  required
+                  theme={{
+                    field: {
+                      input: {
+                        colors: {
+                          gray: "bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500 text-sm",
+                        },
+                      },
+                    },
+                  }}
+                />
+              )}
             </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                name="mode"
-                id={id + "-offline"}
-                value="offline"
-                defaultChecked
+
+            <div>
+              <div className="mb-1.5 block">
+                <Label
+                  htmlFor={`${id}-amt`}
+                  value="Amount (₹)"
+                  className="text-gray-300 text-xs font-medium"
+                />
+              </div>
+              <TextInput
+                type="number"
+                step="any"
+                min="0"
+                id={`${id}-amt`}
+                name="amount"
+                placeholder="0.00"
+                required
+                theme={{
+                  field: {
+                    input: {
+                      colors: {
+                        gray: "bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500 text-sm",
+                      },
+                    },
+                  },
+                }}
               />
-              <label htmlFor={id + "-offline"} className="cursor-pointer">
-                Offline
-              </label>
             </div>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          className="mt-2 flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
-          disabled={isLoading}
-        >
-          {isLoading ? `Adding ${label}...` : `Add ${label}`}
-        </button>
-      </form>
-    </section>
+          {/* Payment Mode */}
+          <div>
+            <div className="mb-2 block">
+              <Label
+                value="Payment Mode"
+                className="text-gray-300 text-xs font-medium"
+              />
+            </div>
+            <fieldset className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Radio
+                  id={`${id}-offline`}
+                  name="mode"
+                  value="offline"
+                  defaultChecked
+                  className="text-cyan-600 focus:ring-cyan-600 bg-gray-800 border-gray-700 cursor-pointer"
+                />
+                <Label
+                  htmlFor={`${id}-offline`}
+                  className="text-gray-300 text-xs cursor-pointer font-normal"
+                >
+                  Offline
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Radio
+                  id={`${id}-online`}
+                  name="mode"
+                  value="online"
+                  className="text-cyan-600 focus:ring-cyan-600 bg-gray-800 border-gray-700 cursor-pointer"
+                />
+                <Label
+                  htmlFor={`${id}-online`}
+                  className="text-gray-300 text-xs cursor-pointer font-normal"
+                >
+                  Online
+                </Label>
+              </div>
+            </fieldset>
+          </div>
+
+          {/* Submit Action */}
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full mt-4 border font-medium transition-colors ${
+              label === "expense"
+                ? "border-red-600 text-red-500 bg-red-950/20 hover:bg-red-600 hover:text-white focus:ring-red-800"
+                : "border-emerald-600 text-emerald-400 bg-emerald-950/20 hover:bg-emerald-600 hover:text-white focus:ring-emerald-800"
+            }`}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <Spinner size="sm" />
+                <span>Adding {label}...</span>
+              </div>
+            ) : (
+              `Add ${label.charAt(0).toUpperCase() + label.slice(1)}`
+            )}
+          </Button>
+        </form>
+      </DrawerItems>
+    </Drawer>
   );
 }
 

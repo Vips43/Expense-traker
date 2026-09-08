@@ -13,7 +13,7 @@ function Layout() {
 
   return (
     // changed h-full to fixed h-screen with absolute overflow block
-    <div className="relative bg-slate-950 text-white flex flex-col h-dvh w-full overflow-hidden">
+    <div className="relative bg-slate-950 text-white flex flex-col h-dvh w-full">
       <nav className="p-4 bg-slate-900 flex items-center justify-between px-5 h-16 shrink-0">
         <div className="flex items-center gap-5">
           <div
@@ -37,7 +37,7 @@ function Layout() {
       <Navbar />
       <Analytics />
 
-      <main className="flex-1 min-h-0 p-4 overflow-hidden">
+      <main className="flex-1 min-h-0 px-2 pt-2 overflow-hidden flex flex-col">
         <Outlet />
       </main>
     </div>
@@ -47,7 +47,7 @@ function Layout() {
 export default Layout;
 
 export function ProtectedRoute() {
-  const { user } = useAuthStore();
+  const { user } = useAuthStore((state) => state.user);
 
   if (!user || !user.name) {
     return <Navigate to="/login" replace />;

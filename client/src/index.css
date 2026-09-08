@@ -2,6 +2,9 @@
 @import "flowbite-react/plugin/tailwindcss";
 @source "../.flowbite-react/class-list.json";
 
+
+@custom-variant dark (.never-match-this-class);
+
 /* After your imports/base styles */
 @layer components {
   .form-label {
@@ -14,6 +17,9 @@
   }
   .skeleton-h3 {
     @apply w-28 h-10 bg-slate-800 rounded-md animate-pulse relative overflow-hidden;
-    @apply before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:to-transparent before:from-transparent before:via-slate-700/30;
+    @apply before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_infinite] before:bg-linear-90 before:to-transparent before:from-transparent before:via-slate-700/30;
+  }
+  .bg-grad-fuschia {
+    @apply from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white;
   }
 }

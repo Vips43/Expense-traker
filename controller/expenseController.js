@@ -14,22 +14,22 @@ export const addExpense = async (req, res) => {
       mode,
       category,
       type: "expense",
-      user: req.user._id,
+      user: req.user.id,
     });
-    await User.findByIdAndUpdate(req.user._id, {
+    await User.findByIdAndUpdate(req.user.id, {
       $push: { expense: expense._id },
     });
 
     res.status(201).json(expense);
   } catch (error) {
-    console.log(error);
+    console.log("error:", error);
     res.status(500).json({ msg: "failed to add expense" });
   }
 };
 
 export const getExpense = async (req, res) => {
   try {
-    if (!req.user) res.status(401).json({ msg: "user not found" });
+    if (!req.user) return res.status(401).json({ msg: "user not found" });
     const value = req.params.value;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 15;
@@ -63,26 +63,29 @@ export const getExpense = async (req, res) => {
       return {};
     };
     const checkedValue = checkVal(value);
-    console.log(checkedValue, value);
+    console.log("chval, val", checkedValue, value);
     const [expenses, earnings, expenseCount, earningcount] = await Promise.all([
-      Expense.find({ user: req.user._id, ...checkedValue })
+      Expense.find({ user: req.user.id, ...checkedValue })
         .sort({ createdAt: -1 })
         .limit(skip + limit),
-      Earning.find({ user: req.user._id, ...checkedValue })
+      Earning.find({ user: req.user.id, ...checkedValue })
         .sort({ createdAt: -1 })
         .limit(skip + limit),
-      Expense.countDocuments({ user: req.user._id, ...checkedValue }),
-      Earning.countDocuments({ user: req.user._id, ...checkedValue }),
+      Expense.countDocuments({ user: req.user.id, ...checkedValue }),
+      Earning.countDocuments({ user: req.user.id, ...checkedValue }),
     ]);
+
     if (expenses.length === 0 && earnings === 0)
       return res.status(200).json({ msg: "no expense or earning found" });
+
     const transactions = [...expenses, ...earnings].sort(
       (a, b) => b.createdAt - a.createdAt,
     );
     const totalItems = expenseCount + earningcount;
     const allTransactions = transactions.slice(skip, skip + limit);
 
-    console.log(limit, totalItems);
+    console.log("limit totitms", limit, totalItems);
+
     res.status(200).json({
       allTransactions,
       currentPage: page,
@@ -98,7 +101,7 @@ export const getExpense = async (req, res) => {
 
 export const getTotalExp = async (req, res) => {
   try {
-    const user = await User.findById(req?.user?._id).populate(
+    const user = await User.findById(req?.user?.id).populate(
       "expense earning",
     );
     if (!user) return res.status(404).json({ msg: "no user found" });
@@ -113,7 +116,7 @@ export const getTotalExp = async (req, res) => {
     );
     res.status(200).json({ totalSpent, totalEarn });
   } catch (error) {
-    console.log(error.message);
+    console.log("errmsg:", error.message);
     res.status(500).json({ msg: error.message, error });
   }
 };
@@ -125,7 +128,7 @@ export const removeTxn = async (req, res) => {
     return res.status(400).json({ msg: "select valid trasaction" });
   try {
     let txn;
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     if (type === "expense") txn = await Expense.findById(id);
     else if (type === "earning") txn = await Earning.findById(id);
@@ -146,8 +149,8 @@ export const getAllData = async (req, res) => {
   try {
     // 1 If req.user._id is a user ID, use find() with a query object
 
-    const expense = await Expense.find({ user: req.user._id });
-    const earning = await Earning.find({ user: req.user._id });
+    const expense = await Expense.find({ user: req.user.id });
+    const earning = await Earning.find({ user: req.user.id });
 
     const onlineData = expense.filter((e) => e.mode === "online");
     const offlineData = expense.filter((e) => e.mode === "offline");
@@ -168,8 +171,11 @@ export const getAllData = async (req, res) => {
 
 export const chartData = async (req, res) => {
   try {
-    const userId = req.user._id;
-    if (!userId) res.status(401).json({ msg: "User not authenticated" });
+    console.log("user", req.user);
+    if (!req.user || !req.user.id)
+      return res.status(401).json({ msg: "User not authenticated" });
+
+    const userId = req.user.id;
     // 1. Monthly Summary (Grouped by Year, Month, and Transaction Type)
     const monthlyData = await Expense.aggregate([
       { $match: { user: userId } },

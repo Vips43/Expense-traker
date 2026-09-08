@@ -16,8 +16,9 @@ export function ToggleButtons({ setToggle }) {
         theme={buttonTheme} 
         color="exp" 
         type="button" 
+        className="focus:ring-0"
         onClick={() => setToggle("expense")}
-      >
+        >
         Add Expenses
       </Button>
       
@@ -25,6 +26,7 @@ export function ToggleButtons({ setToggle }) {
         theme={buttonTheme} 
         color="earn" 
         type="button" 
+        className="focus:ring-0"
         onClick={() => setToggle("earning")}
       >
         Add Earning

@@ -1,5 +1,4 @@
 import e from "express";
-import { protect } from "../middleware/authMiddleware.js";
 import {
   addExpense,
   chartData,
@@ -12,15 +11,15 @@ import { addEarning, filterTxns } from "../controller/earningController.js";
 
 const router = e.Router();
 
-router.post("/expense", protect, addExpense);
-router.post("/earning", protect, addEarning);
-router.get("/expense/:value", protect, getExpense);
-router.get("/totalExp", protect, getTotalExp);
-router.get("/filter/:query", protect, filterTxns);
-router.get("/allData", protect, getAllData);
+router.post("/expense", addExpense);
+router.post("/earning", addEarning);
+router.get("/expense/:value", getExpense);
+router.get("/totalExp", getTotalExp);
+router.get("/filter/:query", filterTxns);
+router.get("/allData", getAllData);
 
-router.get("/chartData", protect, chartData);
+router.get("/chartData", chartData);
 
-router.delete("/txn/:id", protect, removeTxn);
+router.delete("/txn/:id", removeTxn);
 
 export default router;
