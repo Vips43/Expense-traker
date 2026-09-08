@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Test Endpoint with Automatic Retries
         run: |
-          URL="https://vercel.app"
+          URL="https://expense-traker-neon.vercel.app/api/ping"
           MAX_ATTEMPTS=5
           ATTEMPT=1
           SUCCESS=false

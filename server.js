@@ -39,7 +39,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", protect, expenseRoutes);
 app.use("/api", protect, reportRoutes);
 
-app.get("/ping", (req, res) => {
+app.get("/api/ping", (req, res) => {
   res.send("ping test succeed");
 });
 const backfillTimestamps = async () => {
