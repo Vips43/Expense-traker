@@ -44,7 +44,7 @@ export const useAuthStore = create((set, get) => ({
         msg: data.msg,
       };
 
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("exp-user", JSON.stringify(user));
       set({ user: user, loading: false, isAuthenticated: true, err: null });
     } catch (error) {
       console.error("login failed", error.message);
@@ -68,7 +68,7 @@ export const useAuthStore = create((set, get) => ({
   },
 
   logout: () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("exp-user");
     set({ user: null, isAuthenticated: false });
   },
 

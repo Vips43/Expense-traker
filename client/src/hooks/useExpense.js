@@ -65,6 +65,7 @@ export function useAddEarning() {
   return useMutation({
     mutationFn: async (earningData) => {
       const res = await api.post("/earning", earningData);
+      console.log(res);
       return res.data;
     },
     onSuccess: () => {

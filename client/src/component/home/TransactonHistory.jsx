@@ -21,7 +21,7 @@ import { useExpenses, useRemoveTxn } from "../../hooks/useExpense";
 export default function TransactionHistory() {
   const [toggleId, setToggleId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [count, setCount] = useState(10);
+  const [count, setCount] = useState(15);
   const [value, setValue] = useState("all");
 
   const { mutateAsync: removeExpense, isPending: rmPending } = useRemoveTxn();
@@ -95,14 +95,14 @@ export default function TransactionHistory() {
                       onClick={() => setToggleId(open ? null : ex._id)}
                       className={`cursor-pointer border-b border-gray-800 transition-colors ${
                         open
-                          ? "bg-gray-800/80 text-white"
-                          : "bg-gray-900 hover:bg-gray-800/40"
+                          ? "bg-gray-800 text-white hover:bg-gray-900"
+                          : "bg-gray-900 hover:bg-gray-800"
                       }`}
                     >
                       <TableCell className="p-3 text-gray-500">
                         {(currentPage - 1) * count + i + 1}
                       </TableCell>
-                      <TableCell className="p-3 font-medium text-white truncate max-w-[150px]">
+                      <TableCell className="p-3 font-medium text-white truncate">
                         {ex.name}
                       </TableCell>
                       <TableCell className="p-3">

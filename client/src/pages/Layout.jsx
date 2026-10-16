@@ -47,9 +47,9 @@ function Layout() {
 export default Layout;
 
 export function ProtectedRoute() {
-  const { user } = useAuthStore((state) => state.user);
+  const user  = useAuthStore((state) => state?.user);
 
-  if (!user || !user.name) {
+  if (!user?.token || !user?.user?.name) {
     return <Navigate to="/login" replace />;
   }
 

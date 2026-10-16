@@ -7,22 +7,26 @@ import { useAuthStore } from "../store/authStore";
 function Login() {
   const navigate = useNavigate();
 
-  const { mutateAsync, isSuccess, isPending, isError, error } = useUserLogin();
+  const { mutateAsync, isPending } = useUserLogin();
   const user = useAuthStore((state) => state.user);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const obj = new FormData(e.target);
     const formData = Object.fromEntries(obj);
-
-    await mutateAsync(formData);
+    try {
+      await mutateAsync(formData);
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.log(error);
+    }
   };
-  if (isError) console.error(error);
-  
-  console.log(user);
   useEffect(() => {
-    if (user) navigate("/");
-  }, [user]);
+    if (user?.user?.name) {
+      navigate("/", { replace: true });
+    }
+  }, [user, navigate]);
+
   return (
     <div className="h-dvh flex items-center justify-center bg-linear-30 from-neutral-900 via-neutral-800 to-neutral-950 w-full p-4 selection:bg-fuchsia-500 selection:text-white">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-fuchsia-500/10 blur-[120px] rounded-full pointer-events-none" />

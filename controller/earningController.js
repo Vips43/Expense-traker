@@ -13,7 +13,7 @@ export const addEarning = async (req, res) => {
       amount,
       mode,
       type: "earning",
-      user: req.user._id,
+      user: req.user.id,
     });
     res.status(200).json({ msg: "earning added!" });
   } catch (error) {

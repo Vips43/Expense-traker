@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import connectDB from "./config/conn.js";
 import expenseRoutes from "./routes/expenseRoutes.js";
-import User from "./model/userModel.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
 
@@ -42,30 +41,7 @@ app.use("/api", protect, reportRoutes);
 app.get("/api/ping", (req, res) => {
   res.send("ping test succeed");
 });
-const backfillTimestamps = async () => {
-  try {
-    const users = await User.find({}).lean();
-    console.log(`Found ${users.length} users`);
 
-    for (const user of users) {
-      const creationDate = user._id.getTimestamp();
-
-      await User.collection.updateOne(
-        // native driver, bypasses Mongoose timestamps
-        { _id: user._id },
-        { $set: { createdAt: creationDate, updatedAt: creationDate } },
-      );
-    }
-
-    console.log("Done!");
-    process.exit(0);
-  } catch (error) {
-    console.error("Failed:", error);
-    process.exit(1);
-  }
-};
-
-// backfillTimestamps();
 
 export default app;
 
