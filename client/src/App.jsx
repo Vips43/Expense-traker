@@ -1,10 +1,10 @@
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
-import Layout, { ProtectedRoute } from "./pages/Layout";
 import Home from "./pages/Home";
 import Register from "./component/Register";
 import Login from "./component/Login";
 import NewExp from "./pages/NewExp";
+import Layout, { ProtectedRoute } from "./pages/Layout";
 
 function App() {
   return (

@@ -16,7 +16,7 @@ export const useUserLogin = () => {
       return await res.json();
     },
     onSuccess: (data) => {
-      localStorage.setItem("exp-user", JSON.stringify(data));
+      localStorage.setItem("exp-user", JSON.stringify(data.user));
       useAuthStore.getState().setUser(data.user);
     },
   });

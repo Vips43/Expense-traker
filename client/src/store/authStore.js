@@ -27,30 +27,31 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  login: async (creds) => {
-    set({ loading: true, err: null });
-    try {
-      const res = await fetch(`${BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(creds),
-      });
-      const data = await res.json();
-      const user = {
-        name: data.user.name,
-        email: data.user.email,
-        token: data.token,
-        date: data.user.date,
-        msg: data.msg,
-      };
+  // login: async (creds) => {
+  //   set({ loading: true, err: null });
+  //   try {
+  //     const res = await fetch(`${BASE_URL}/auth/login`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(creds),
+  //     });
+  //     const data = await res.json();
+      
+  //     const user = {
+  //       name: data.user.name,
+  //       email: data.user.email,
+  //       token: data.token,
+  //       date: data.user.date,
+  //       msg: data.msg,
+  //     };
 
-      localStorage.setItem("exp-user", JSON.stringify(user));
-      set({ user: user, loading: false, isAuthenticated: true, err: null });
-    } catch (error) {
-      console.error("login failed", error.message);
-      set({ loading: false, err: "Server error" });
-    }
-  },
+  //     localStorage.setItem("exp-user", JSON.stringify(user));
+  //     set({ user: user, loading: false, isAuthenticated: true, err: null });
+  //   } catch (error) {
+  //     console.error("login failed", error.message);
+  //     set({ loading: false, err: "Server error" });
+  //   }
+  // },
 
   getUser: async () => {
     try {

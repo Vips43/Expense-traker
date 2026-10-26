@@ -60,15 +60,20 @@ function AddExp({ label }) {
       open={true}
       onClose={handleClose}
       position="bottom"
-      className="bg-gray-900 border-t border-gray-800 p-4 rounded-t-2xl max-w-lg mx-auto shadow-2xl max-h-[90dvh] overflow-y-auto transition-all duration-1000"
+      className={`${label === "expense"?"bg-red-950":"bg-green-950"} border-t border-gray-300 p-4 rounded-t-2xl max-w-lg mx-auto shadow-2xl max-h-[90dvh] overflow-y-auto transition-all duration-1000`}
     >
       {/* Pull handle bar indicator */}
-      <div className="mx-auto w-12 h-1.5 bg-gray-700 rounded-full mb-3 cursor-pointer" />
+      <div className="mx-auto w-12 h-1.5 bg-gray-400 rounded-full mb-3 cursor-pointer" />
 
       <DrawerHeader
         title={`Add ${label.charAt(0).toUpperCase() + label.slice(1)}`}
         titleIcon={() => null}
-        className="text-white text-base font-semibold border-b border-gray-800 pb-2 mb-4"
+        className="border-b border-gray-100 pb-2 mb-4"
+        theme={{
+          inner: {
+            title: "text-white text-base font-semibold",
+          },
+        }}
       />
 
       <DrawerItems>
@@ -88,15 +93,6 @@ function AddExp({ label }) {
               placeholder="e.g. Grocery Shopping"
               required
               color="gray"
-              theme={{
-                field: {
-                  input: {
-                    colors: {
-                      gray: "bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500 text-sm",
-                    },
-                  },
-                },
-              }}
             />
           </div>
 
@@ -111,20 +107,7 @@ function AddExp({ label }) {
                 />
               </div>
               {label === "expense" ? (
-                <Select
-                  id={`${id}-cat`}
-                  name="category"
-                  required
-                  theme={{
-                    field: {
-                      select: {
-                        colors: {
-                          gray: "bg-gray-800 border-gray-700 text-white focus:border-cyan-500 focus:ring-cyan-500 text-sm",
-                        },
-                      },
-                    },
-                  }}
-                >
+                <Select id={`${id}-cat`} name="category" required>
                   {categories.map((type) => (
                     <option key={type} value={type}>
                       {type}
@@ -137,15 +120,6 @@ function AddExp({ label }) {
                   name="category"
                   placeholder="e.g. Salary"
                   required
-                  theme={{
-                    field: {
-                      input: {
-                        colors: {
-                          gray: "bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500 text-sm",
-                        },
-                      },
-                    },
-                  }}
                 />
               )}
             </div>
@@ -166,15 +140,6 @@ function AddExp({ label }) {
                 name="amount"
                 placeholder="0.00"
                 required
-                theme={{
-                  field: {
-                    input: {
-                      colors: {
-                        gray: "bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500 text-sm",
-                      },
-                    },
-                  },
-                }}
               />
             </div>
           </div>

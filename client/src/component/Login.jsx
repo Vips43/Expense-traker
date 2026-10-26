@@ -22,7 +22,7 @@ function Login() {
     }
   };
   useEffect(() => {
-    if (user?.user?.name) {
+    if (user?.name) {
       navigate("/", { replace: true });
     }
   }, [user, navigate]);

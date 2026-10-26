@@ -42,7 +42,8 @@ export default function TransactionHistory() {
   };
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-gray-900 text-gray-400 rounded-lg border border-gray-800 text-sm overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 bg-gray-900 text-gray-400 rounded-lg border border-gray-800 text-sm overflow-hidden">
+      {" "}
       {/* Header */}
       <div className="p-3 shrink-0 flex flex-wrap justify-between items-center gap-3 border-b border-gray-800">
         <div>
@@ -57,9 +58,8 @@ export default function TransactionHistory() {
           value={value}
         />
       </div>
-
       {/* Flowbite Scrollable Table */}
-      <div className="overflow-y-auto scrollbar-hidden flex-1 min-h-0">
+      <div className="overflow-y-auto scrollbar-hidden">
         <Table hoverable className="text-left w-full">
           <TableHead className="sticky top-0 z-10 bg-gray-800 text-gray-400">
             <TableRow>
@@ -79,7 +79,7 @@ export default function TransactionHistory() {
 
           <TableBody className="divide-y divide-gray-800 ">
             {isPending ? (
-              <TableRow >
+              <TableRow>
                 <TableCell colSpan={5} className="py-8 text-center bg-gray-900">
                   <Spinner size="md" />
                 </TableCell>
@@ -186,7 +186,6 @@ export default function TransactionHistory() {
           </TableBody>
         </Table>
       </div>
-
       {/* Pinned Pagination Footer */}
       <div className="p-3 shrink-0 flex justify-between items-center gap-2 border-t border-gray-800 bg-gray-900 text-xs">
         <div className="flex items-center gap-2">

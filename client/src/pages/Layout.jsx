@@ -12,8 +12,7 @@ function Layout() {
   const setToggle = useMyStore((state) => state.setToggle);
 
   return (
-    // changed h-full to fixed h-screen with absolute overflow block
-    <div className="relative bg-slate-950 text-white flex flex-col h-dvh w-full">
+    <div className="bg-slate-950 text-white flex flex-col h-full w-full min-h-0">
       <nav className="p-4 bg-slate-900 flex items-center justify-between px-5 h-16 shrink-0">
         <div className="flex items-center gap-5">
           <div
@@ -37,7 +36,8 @@ function Layout() {
       <Navbar />
       <Analytics />
 
-      <main className="flex-1 min-h-0 px-2 pt-2 overflow-hidden flex flex-col">
+      {/* min-h-0 is mandatory in flexbox to allow overflow-y-auto to take effect */}
+      <main className="flex-1 min-h-0 px-2 py-2 overflow-y-auto flex flex-col">
         <Outlet />
       </main>
     </div>
@@ -47,9 +47,9 @@ function Layout() {
 export default Layout;
 
 export function ProtectedRoute() {
-  const user  = useAuthStore((state) => state?.user);
+  const user = useAuthStore((state) => state?.user);
 
-  if (!user?.token || !user?.user?.name) {
+  if (!user?.name || !user?.id) {
     return <Navigate to="/login" replace />;
   }
 
