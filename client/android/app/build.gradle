@@ -40,6 +40,10 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+
+    // Add these two lines to pin kotlin-stdlib and drop jdk7/jdk8
+    implementation platform("org.jetbrains.kotlin:kotlin-bom:1.8.22")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
 }
 
 apply from: 'capacitor.build.gradle'

@@ -36,7 +36,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "capacitor://localhost",
+      "https://localhost",
       "capacitor://localhost",
     ],
     credentials: true,
