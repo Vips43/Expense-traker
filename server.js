@@ -32,7 +32,16 @@ connectDB(mongo_url);
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "capacitor://localhost",
+      "capacitor://localhost",
+    ],
+    credentials: true,
+  }),
+);
 
 app.use("/api/auth", authRoutes);
 app.use("/api", protect, expenseRoutes);
@@ -41,7 +50,6 @@ app.use("/api", protect, reportRoutes);
 app.get("/api/ping", (req, res) => {
   res.send("ping test succeed");
 });
-
 
 export default app;
 

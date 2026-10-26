@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^7.6.9",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/status-bar": "^8.0.4",
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-query": "^5.101.0",
     "@vercel/analytics": "^2.0.1",

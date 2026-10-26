@@ -12,7 +12,7 @@ function Layout() {
   const setToggle = useMyStore((state) => state.setToggle);
 
   return (
-    <div className="bg-slate-950 text-white flex flex-col h-full w-full min-h-0">
+    <div className="relative bg-slate-950 text-white flex flex-col h-dvh w-full">
       <nav className="p-4 bg-slate-900 flex items-center justify-between px-5 h-16 shrink-0">
         <div className="flex items-center gap-5">
           <div
