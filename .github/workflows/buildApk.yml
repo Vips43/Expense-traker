@@ -24,13 +24,10 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK Platform & Build-Tools
+      # Use the runner's pre-installed SDK directly to accept licenses
+      - name: Accept Android SDK Licenses
         run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Install Client Dependencies & Sync Capacitor
         working-directory: ./client
