@@ -37,6 +37,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://localhost",
+      "https://expense-traker-neon.vercel.app",
       "capacitor://localhost",
     ],
     credentials: true,
