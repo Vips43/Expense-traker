@@ -1,14 +1,11 @@
 name: Minute Ping Website
-
 on:
   schedule:
-    - cron: '* * * * *'
+    - cron: '30 20 * * *'
   workflow_dispatch:
-
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Website
-        # Added -k to ignore SSL verification errors
         run: curl -k -I -s https://www.expense-traker-neon.vercel.app/api/ping
